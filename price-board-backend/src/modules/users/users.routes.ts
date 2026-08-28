@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Role } from "@prisma/client";
 import { UsersController } from "./users.controller";
+import { uploadProfilePhoto } from "./users.upload";
 import { authenticate } from "../../middlewares/authenticate.middleware";
 import { authorize } from "../../middlewares/authorize.middleware";
 import { asyncHandler } from "../../utils/asyncHandler.util";
@@ -14,6 +15,11 @@ router.use(authenticate);
 // "me" is never captured as an id.
 router.get("/me", asyncHandler(UsersController.me));
 router.patch("/me/profile-photo", asyncHandler(UsersController.updateMyProfilePhoto));
+router.post(
+  "/me/profile-photo-upload",
+  uploadProfilePhoto,
+  asyncHandler(UsersController.uploadProfilePhotoFile)
+);
 
 // Admin-only account management.
 router.post("/", authorize(Role.ADMIN), asyncHandler(UsersController.create));

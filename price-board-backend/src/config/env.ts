@@ -17,6 +17,10 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
 
   BCRYPT_SALT_ROUNDS: z.coerce.number().default(10),
+
+  // Public origin used to build absolute URLs for uploaded files
+  // (profile photos). If unset, it's derived from the incoming request.
+  PUBLIC_BASE_URL: z.string().url().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

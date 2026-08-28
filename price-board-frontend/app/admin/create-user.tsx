@@ -9,11 +9,12 @@ import { PrimaryButton } from "../../src/components/PrimaryButton";
 import { UsersApi } from "../../src/api/usersApi";
 import { getApiErrorMessage } from "../../src/api/apiError";
 import { UserRole } from "../../src/types/auth.types";
+import { strings } from "../../src/constants/strings";
 
 const ROLE_OPTIONS = [
-  { label: "Productor", value: "PRODUCER" },
-  { label: "Encargado de precios", value: "PRICE_MANAGER" },
-  { label: "Administrador", value: "ADMIN" },
+  { label: strings.roles.PRODUCER, value: "PRODUCER" },
+  { label: strings.roles.PRICE_MANAGER, value: "PRICE_MANAGER" },
+  { label: strings.roles.ADMIN, value: "ADMIN" },
 ];
 
 function generatePassword(): string {
@@ -42,7 +43,7 @@ export default function CreateUserScreen() {
 
   async function submit() {
     if (!username.trim() || !password || !fullName.trim() || !role) {
-      setFormError("Completa usuario, contraseña, nombre y rol");
+      setFormError(strings.createUser.missingFields);
       return;
     }
     setFormError(null);
@@ -64,52 +65,60 @@ export default function CreateUserScreen() {
   }
 
   return (
-    <Screen title="Crear usuario" showBack>
+    <Screen title={strings.createUser.title} showBack>
       <Card>
         <FormField
-          label="Usuario"
-          placeholder="nombre.usuario"
+          label={strings.createUser.usernameLabel}
+          placeholder={strings.createUser.usernamePlaceholder}
           autoCapitalize="none"
           value={username}
           onChangeText={setUsername}
         />
 
         <FormField
-          label="Contraseña"
-          placeholder="Mínimo 8 caracteres"
+          label={strings.createUser.passwordLabel}
+          placeholder={strings.createUser.passwordPlaceholder}
           autoCapitalize="none"
           secureToggle
           value={password}
           onChangeText={setPassword}
         />
         <Pressable onPress={() => setPassword(generatePassword())} className="mb-5 -mt-3 self-start">
-          <Text className="text-sm font-semibold text-primary-light">Generar contraseña</Text>
+          <Text className="text-sm font-semibold text-primary-light dark:text-accent">
+            {strings.createUser.generatePassword}
+          </Text>
         </Pressable>
 
         <FormField
-          label="Nombre completo"
-          placeholder="Nombre y apellido"
+          label={strings.createUser.fullNameLabel}
+          placeholder={strings.createUser.fullNamePlaceholder}
           value={fullName}
           onChangeText={setFullName}
         />
 
         <FormField
-          label="Municipio"
-          placeholder="Ej. Ancuya"
+          label={strings.createUser.municipalityLabel}
+          placeholder={strings.createUser.municipalityPlaceholder}
           value={municipality}
           onChangeText={setMunicipality}
         />
 
         <Select
-          label="Rol"
+          label={strings.createUser.roleLabel}
           value={role}
           options={ROLE_OPTIONS}
           onChange={(value) => setRole(value as UserRole)}
         />
 
-        {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+        {formError ? (
+          <Text className="mb-3 text-sm text-danger dark:text-danger-dark">{formError}</Text>
+        ) : null}
 
-        <PrimaryButton label="Crear usuario" onPress={submit} loading={submitting} />
+        <PrimaryButton
+          label={strings.createUser.createButton}
+          onPress={submit}
+          loading={submitting}
+        />
       </Card>
 
       <View className="h-8" />

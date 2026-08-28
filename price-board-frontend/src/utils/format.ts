@@ -1,3 +1,5 @@
+import { strings } from "../constants/strings";
+
 /**
  * Single responsibility: turn raw API values into the strings shown in
  * the UI. All user-facing text is in Spanish.
@@ -41,12 +43,6 @@ export function formatDate(iso: string): string {
   return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
 }
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Administrador",
-  PRICE_MANAGER: "Encargado de precios",
-  PRODUCER: "Productor",
-};
-
 export function roleLabel(role: string): string {
-  return ROLE_LABELS[role] ?? role;
+  return strings.roles[role] ?? role;
 }

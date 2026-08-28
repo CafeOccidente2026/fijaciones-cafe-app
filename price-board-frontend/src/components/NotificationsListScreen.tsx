@@ -6,6 +6,7 @@ import { NotificationItem } from "./NotificationItem";
 import { useAsync } from "../hooks/useAsync";
 import { NotificationsApi } from "../api/notificationsApi";
 import { AppNotification } from "../types/notification.types";
+import { strings } from "../constants/strings";
 
 /**
  * Single responsibility: the notifications inbox, identical for every
@@ -38,12 +39,12 @@ export function NotificationsListScreen() {
   );
 
   return (
-    <Screen title="Notificaciones" scroll={false}>
+    <Screen title={strings.notificationsInbox.title} scroll={false}>
       <StateView
         isLoading={isLoading}
         error={error}
         isEmpty={!isLoading && !error && items.length === 0}
-        emptyText="No tienes notificaciones."
+        emptyText={strings.notificationsInbox.empty}
         onRetry={reload}
       >
         <FlatList

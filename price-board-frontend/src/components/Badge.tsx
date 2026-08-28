@@ -4,10 +4,22 @@ import { Text, View } from "react-native";
 type BadgeTone = "accent" | "primary" | "danger" | "muted";
 
 const TONES: Record<BadgeTone, { bg: string; text: string }> = {
-  accent: { bg: "bg-accent-light", text: "text-primary" },
-  primary: { bg: "bg-primary", text: "text-white" },
-  danger: { bg: "bg-danger/15", text: "text-danger" },
-  muted: { bg: "bg-border", text: "text-muted" },
+  accent: {
+    bg: "bg-accent-soft dark:bg-accent-soft-dark",
+    text: "text-primary dark:text-white",
+  },
+  primary: {
+    bg: "bg-primary dark:bg-primary-dark",
+    text: "text-white",
+  },
+  danger: {
+    bg: "bg-danger/15 dark:bg-danger-dark/25",
+    text: "text-danger dark:text-danger-dark",
+  },
+  muted: {
+    bg: "bg-border dark:bg-border-dark",
+    text: "text-muted dark:text-muted-dark",
+  },
 };
 
 /**

@@ -3,6 +3,7 @@ import { Redirect } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { useAuth } from "../src/auth/AuthContext";
 import { UserRole } from "../src/types/auth.types";
+import { useThemeColors } from "../src/theme/useThemeColors";
 
 const HOME_BY_ROLE: Record<UserRole, string> = {
   PRODUCER: "/producer",
@@ -16,11 +17,12 @@ const HOME_BY_ROLE: Record<UserRole, string> = {
  */
 export default function Home() {
   const { user, isLoading } = useAuth();
+  const colors = useThemeColors();
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color="#3E2723" />
+      <View className="flex-1 items-center justify-center bg-background dark:bg-background-dark">
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }

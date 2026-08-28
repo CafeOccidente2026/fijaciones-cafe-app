@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Screen } from "./Screen";
 import { Card } from "./Card";
 import { StateView } from "./StateView";
@@ -12,6 +12,7 @@ import { UsersApi } from "../api/usersApi";
 import { PriceFixingsApi } from "../api/priceFixingsApi";
 import { getApiErrorMessage } from "../api/apiError";
 import { DetailedPriceFixing, HistoryFilters } from "../types/priceFixing.types";
+import { strings } from "../constants/strings";
 
 interface FixingHistoryViewProps {
   /** ADMIN also gets a "por usuario" selector (maps to the userId filter). */
@@ -43,21 +44,21 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
     CoffeeTypesApi.list(true)
       .then((types) =>
         setCoffeeTypeOptions([
-          { label: "Todos los tipos", value: "" },
+          { label: strings.history.allTypes, value: "" },
           ...types.map((type) => ({ label: type.name, value: type.id })),
         ])
       )
-      .catch(() => setCoffeeTypeOptions([{ label: "Todos los tipos", value: "" }]));
+      .catch(() => setCoffeeTypeOptions([{ label: strings.history.allTypes, value: "" }]));
 
     if (allowUserFilter) {
       UsersApi.list("PRODUCER")
         .then((users) =>
           setUserOptions([
-            { label: "Todos los usuarios", value: "" },
+            { label: strings.history.allUsers, value: "" },
             ...users.map((user) => ({ label: user.fullName, value: user.id })),
           ])
         )
-        .catch(() => setUserOptions([{ label: "Todos los usuarios", value: "" }]));
+        .catch(() => setUserOptions([{ label: strings.history.allUsers, value: "" }]));
     }
   }, [allowUserFilter]);
 
@@ -92,11 +93,7 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
   }, [rows, nameQuery]);
 
   return (
-    <Screen
-      title="Historial"
-      subtitle="Todas las fijaciones, de la más reciente a la más antigua"
-      scroll={false}
-    >
+    <Screen title={strings.history.title} subtitle={strings.history.subtitle} scroll={false}>
       <FlatList
         data={visibleRows}
         keyExtractor={(item) => item.id}
@@ -105,36 +102,36 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
         ListHeaderComponent={
           <Card className="mb-1">
             <Select
-              label="Tipo de cafe"
+              label={strings.history.coffeeTypeFilterLabel}
               value={coffeeTypeId ?? ""}
               options={coffeeTypeOptions}
               onChange={(value) => setCoffeeTypeId(value || null)}
             />
             {allowUserFilter ? (
               <Select
-                label="Usuario"
+                label={strings.history.userFilterLabel}
                 value={userId ?? ""}
                 options={userOptions}
                 onChange={(value) => setUserId(value || null)}
               />
             ) : null}
             <FormField
-              label="Municipio"
-              placeholder="Ej. Ancuya"
+              label={strings.history.municipalityLabel}
+              placeholder={strings.history.municipalityPlaceholder}
               value={municipality}
               onChangeText={setMunicipality}
             />
             <FormField
-              label="Nombre"
-              placeholder="Buscar por nombre"
+              label={strings.history.nameLabel}
+              placeholder={strings.history.namePlaceholder}
               value={nameQuery}
               onChangeText={setNameQuery}
             />
             <View className="flex-row gap-3">
               <View className="flex-1">
                 <FormField
-                  label="Desde"
-                  placeholder="AAAA-MM-DD"
+                  label={strings.history.fromLabel}
+                  placeholder={strings.history.datePlaceholder}
                   autoCapitalize="none"
                   value={dateFrom}
                   onChangeText={setDateFrom}
@@ -142,15 +139,15 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
               </View>
               <View className="flex-1">
                 <FormField
-                  label="Hasta"
-                  placeholder="AAAA-MM-DD"
+                  label={strings.history.toLabel}
+                  placeholder={strings.history.datePlaceholder}
                   autoCapitalize="none"
                   value={dateTo}
                   onChangeText={setDateTo}
                 />
               </View>
             </View>
-            <PrimaryButton label="Aplicar filtros" onPress={loadHistory} loading={isLoading} />
+            <PrimaryButton label={strings.history.applyFilters} onPress={loadHistory} loading={isLoading} />
           </Card>
         }
         renderItem={({ item }) => <FixingDetailCard fixing={item} />}
@@ -159,7 +156,7 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
             isLoading={isLoading}
             error={error}
             isEmpty={!isLoading && !error}
-            emptyText="No hay fijaciones que coincidan con los filtros."
+            emptyText={strings.history.empty}
             onRetry={loadHistory}
           >
             <View />

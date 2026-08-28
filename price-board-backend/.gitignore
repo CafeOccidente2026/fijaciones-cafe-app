@@ -3,3 +3,8 @@ dist/
 .env
 *.log
 .DS_Store
+
+# Uploaded files: keep the folder, ignore its contents
+uploads/profile-photos/*
+!uploads/profile-photos/.gitkeep
+.claude/

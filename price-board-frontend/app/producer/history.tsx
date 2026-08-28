@@ -6,6 +6,7 @@ import { HistoryListItem } from "../../src/components/HistoryListItem";
 import { useAsync } from "../../src/hooks/useAsync";
 import { PriceFixingsApi } from "../../src/api/priceFixingsApi";
 import { MyPriceFixing } from "../../src/types/priceFixing.types";
+import { strings } from "../../src/constants/strings";
 
 /**
  * Producer history: read-only list of every fixing this producer has
@@ -17,12 +18,16 @@ export default function ProducerHistoryScreen() {
   );
 
   return (
-    <Screen title="Mi historial" subtitle="Tus fijaciones, de la más reciente a la más antigua" scroll={false}>
+    <Screen
+      title={strings.producerHistory.title}
+      subtitle={strings.producerHistory.subtitle}
+      scroll={false}
+    >
       <StateView
         isLoading={isLoading}
         error={error}
         isEmpty={!isLoading && !error && (data?.length ?? 0) === 0}
-        emptyText="Todavía no has hecho ninguna fijación."
+        emptyText={strings.producerHistory.empty}
         onRetry={reload}
       >
         <FlatList

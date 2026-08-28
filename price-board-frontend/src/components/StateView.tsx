@@ -1,6 +1,8 @@
 import React from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { PrimaryButton } from "./PrimaryButton";
+import { useThemeColors } from "../theme/useThemeColors";
+import { strings } from "../constants/strings";
 
 interface StateViewProps {
   isLoading: boolean;
@@ -21,15 +23,17 @@ export function StateView({
   isLoading,
   error,
   isEmpty,
-  emptyText = "No hay datos para mostrar.",
+  emptyText = strings.common.noData,
   onRetry,
   children,
 }: StateViewProps) {
+  const colors = useThemeColors();
+
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center py-16">
-        <ActivityIndicator size="large" color="#3E2723" />
-        <Text className="mt-3 text-muted">Cargando...</Text>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="mt-3 text-muted dark:text-muted-dark">{strings.common.loading}</Text>
       </View>
     );
   }
@@ -37,10 +41,10 @@ export function StateView({
   if (error) {
     return (
       <View className="flex-1 items-center justify-center gap-4 px-6 py-16">
-        <Text className="text-center text-danger">{error}</Text>
+        <Text className="text-center text-danger dark:text-danger-dark">{error}</Text>
         {onRetry ? (
           <View className="w-40">
-            <PrimaryButton label="Reintentar" onPress={onRetry} />
+            <PrimaryButton label={strings.common.retry} onPress={onRetry} />
           </View>
         ) : null}
       </View>
@@ -50,7 +54,7 @@ export function StateView({
   if (isEmpty) {
     return (
       <View className="flex-1 items-center justify-center py-16">
-        <Text className="text-center text-muted">{emptyText}</Text>
+        <Text className="text-center text-muted dark:text-muted-dark">{emptyText}</Text>
       </View>
     );
   }

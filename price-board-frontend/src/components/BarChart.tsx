@@ -29,16 +29,24 @@ export function BarChart({ data, formatValue = (value) => value.toString() }: Ba
         return (
           <View key={item.label}>
             <View className="mb-1 flex-row items-center justify-between">
-              <Text className="flex-1 pr-2 text-sm font-semibold text-primary" numberOfLines={1}>
+              <Text
+                className="flex-1 pr-2 text-sm font-semibold text-primary dark:text-white"
+                numberOfLines={1}
+              >
                 {item.label}
               </Text>
-              <Text className="text-sm font-bold text-primary">{formatValue(item.value)}</Text>
+              <Text className="text-sm font-bold text-primary dark:text-white">
+                {formatValue(item.value)}
+              </Text>
             </View>
-            <View className="h-3 overflow-hidden rounded-full bg-border">
-              <View className="h-3 rounded-full bg-accent" style={{ width: `${widthPercent}%` }} />
+            <View className="h-3 overflow-hidden rounded-full bg-border dark:bg-border-dark">
+              <View
+                className="h-3 rounded-full bg-accent dark:bg-accent-dark"
+                style={{ width: `${widthPercent}%` }}
+              />
             </View>
             {item.caption ? (
-              <Text className="mt-1 text-xs text-muted">{item.caption}</Text>
+              <Text className="mt-1 text-xs text-muted dark:text-muted-dark">{item.caption}</Text>
             ) : null}
           </View>
         );

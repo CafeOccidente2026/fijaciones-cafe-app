@@ -9,6 +9,8 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  /** Merge fields into the current user in memory (e.g. new profile photo). */
+  updateUser: (patch: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -59,7 +61,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }
 
-  const value = useMemo(() => ({ user, isLoading, login, logout }), [user, isLoading]);
+  function updateUser(patch: Partial<AuthUser>): void {
+    setUser((current) => (current ? { ...current, ...patch } : current));
+  }
+
+  const value = useMemo(
+    () => ({ user, isLoading, login, logout, updateUser }),
+    [user, isLoading]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

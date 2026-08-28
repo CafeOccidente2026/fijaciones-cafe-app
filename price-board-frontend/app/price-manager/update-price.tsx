@@ -11,6 +11,7 @@ import { CoffeeTypesApi } from "../../src/api/coffeeTypesApi";
 import { getApiErrorMessage } from "../../src/api/apiError";
 import { CoffeeType } from "../../src/types/coffeeType.types";
 import { formatCurrency } from "../../src/utils/format";
+import { strings } from "../../src/constants/strings";
 
 /**
  * PRICE_MANAGER "actualizar precio": choose a coffee type, set the new
@@ -36,18 +37,20 @@ export default function UpdatePriceScreen() {
     setSuccessMessage(null);
     const parsed = Number(price.replace(",", "."));
     if (!selectedType) {
-      setFormError("Selecciona un tipo de café");
+      setFormError(strings.updatePrice.selectCoffeeType);
       return;
     }
     if (!Number.isFinite(parsed) || parsed < 0) {
-      setFormError("Ingresa un precio válido");
+      setFormError(strings.updatePrice.invalidPrice);
       return;
     }
     setFormError(null);
     setSubmitting(true);
     try {
       const updated = await CoffeeTypesApi.updatePrice(selectedType.id, parsed);
-      setSuccessMessage(`Precio de ${updated.name} actualizado a ${formatCurrency(updated.currentPrice)}`);
+      setSuccessMessage(
+        strings.updatePrice.success(updated.name, formatCurrency(updated.currentPrice))
+      );
       setPrice("");
       reload();
     } catch (err) {
@@ -58,20 +61,20 @@ export default function UpdatePriceScreen() {
   }
 
   return (
-    <Screen title="Actualizar precio">
+    <Screen title={strings.updatePrice.title}>
       <StateView
         isLoading={isLoading}
         error={error}
         isEmpty={!isLoading && !error && (coffeeTypes?.length ?? 0) === 0}
-        emptyText="No hay tipos de café registrados."
+        emptyText={strings.updatePrice.empty}
         onRetry={reload}
       >
         <Card>
           <Select
-            label="Tipo de café"
+            label={strings.updatePrice.coffeeTypeLabel}
             value={selectedId}
             options={(coffeeTypes ?? []).map((type) => ({
-              label: `${type.name} — ${formatCurrency(type.currentPrice)}`,
+              label: strings.updatePrice.optionLabel(type.name, formatCurrency(type.currentPrice)),
               value: type.id,
             }))}
             onChange={(value) => {
@@ -81,14 +84,14 @@ export default function UpdatePriceScreen() {
           />
 
           {selectedType ? (
-            <Text className="mb-3 text-sm text-muted">
-              Precio actual: {formatCurrency(selectedType.currentPrice)} / kg
+            <Text className="mb-3 text-sm text-muted dark:text-muted-dark">
+              {strings.updatePrice.currentPrice(formatCurrency(selectedType.currentPrice))}
             </Text>
           ) : null}
 
           <FormField
-            label="Nuevo precio por kg"
-            placeholder="Ej. 12500"
+            label={strings.updatePrice.newPriceLabel}
+            placeholder={strings.updatePrice.newPricePlaceholder}
             keyboardType="numeric"
             value={price}
             onChangeText={(text) => {
@@ -97,14 +100,18 @@ export default function UpdatePriceScreen() {
             }}
           />
 
-          {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+          {formError ? (
+            <Text className="mb-3 text-sm text-danger dark:text-danger-dark">{formError}</Text>
+          ) : null}
           {successMessage ? (
-            <View className="mb-3 rounded-xl bg-accent-light p-3">
-              <Text className="text-center text-sm font-semibold text-primary">{successMessage}</Text>
+            <View className="mb-3 rounded-xl bg-accent-soft p-3 dark:bg-accent-soft-dark">
+              <Text className="text-center text-sm font-semibold text-primary dark:text-white">
+                {successMessage}
+              </Text>
             </View>
           ) : null}
 
-          <PrimaryButton label="Guardar precio" onPress={submit} loading={submitting} />
+          <PrimaryButton label={strings.updatePrice.saveButton} onPress={submit} loading={submitting} />
         </Card>
       </StateView>
     </Screen>

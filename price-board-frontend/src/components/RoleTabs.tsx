@@ -1,6 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useThemeColors } from "../theme/useThemeColors";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -16,13 +17,15 @@ export interface RoleTab {
  * the app palette, plus hide any non-tab routes passed in `hidden`.
  */
 export function RoleTabs({ tabs, hidden = [] }: { tabs: RoleTab[]; hidden?: string[] }) {
+  const colors = useThemeColors();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#3E2723",
-        tabBarInactiveTintColor: "#8D6E63",
-        tabBarStyle: { backgroundColor: "#FFFFFF", borderTopColor: "#E8D9D6" },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
       }}
     >
       {tabs.map((tab) => (

@@ -8,6 +8,7 @@ import { useAsync } from "../../src/hooks/useAsync";
 import { PriceFixingsApi } from "../../src/api/priceFixingsApi";
 import { MonthlyChartItem } from "../../src/types/priceFixing.types";
 import { formatKilos } from "../../src/utils/format";
+import { strings } from "../../src/constants/strings";
 
 /**
  * ADMIN "gráfico": total kilos fixed per coffee type over the last 30
@@ -19,12 +20,12 @@ export default function ChartScreen() {
   );
 
   return (
-    <Screen title="Gráfico" subtitle="Kilos fijados por tipo de café en los últimos 30 días">
+    <Screen title={strings.adminChart.title} subtitle={strings.adminChart.subtitle}>
       <StateView
         isLoading={isLoading}
         error={error}
         isEmpty={!isLoading && !error && (data?.length ?? 0) === 0}
-        emptyText="No hay fijaciones en los últimos 30 días."
+        emptyText={strings.adminChart.empty}
         onRetry={reload}
       >
         <Card>
@@ -32,13 +33,13 @@ export default function ChartScreen() {
             data={(data ?? []).map((item) => ({
               label: item.name,
               value: item.totalKilos,
-              caption: `${item.fixingsCount} ${item.fixingsCount === 1 ? "fijación" : "fijaciones"}`,
+              caption: strings.adminChart.fixingCount(item.fixingsCount),
             }))}
             formatValue={formatKilos}
           />
         </Card>
-        <Text className="px-1 text-xs text-muted">
-          Total de tipos con actividad: {data?.length ?? 0}
+        <Text className="px-1 text-xs text-muted dark:text-muted-dark">
+          {strings.adminChart.typesWithActivity(data?.length ?? 0)}
         </Text>
       </StateView>
     </Screen>

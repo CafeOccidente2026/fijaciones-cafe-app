@@ -1,23 +1,43 @@
 /** @type {import('tailwindcss').Config} */
+
+// Palette: wood + red wine + silver/copper metals.
+// Every semantic token has a "-dark" sibling; components pair them as
+// `bg-card dark:bg-card-dark`. NativeWind toggles the `dark` class from
+// the theme preference (see src/theme/ThemeContext.tsx).
+// IMPORTANT: keep these values in sync with src/theme/colors.ts.
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        background: "#FBF0EE",
-        card: "#FFFFFF",
-        primary: {
-          DEFAULT: "#3E2723",
-          light: "#5D4037",
-        },
-        accent: {
-          DEFAULT: "#6B8E23",
-          light: "#DCEDC8",
-        },
-        muted: "#8D6E63",
-        border: "#E8D9D6",
-        danger: "#C0392B",
+        background: "#EFE3D0",
+        "background-dark": "#241B14",
+
+        card: "#FBF6EC",
+        "card-dark": "#332619",
+
+        primary: "#6E1423",
+        "primary-light": "#8C1D2E",
+        "primary-dark": "#9A2E3F",
+
+        accent: "#B08D57",
+        "accent-dark": "#C9A876",
+        "accent-soft": "#D8C39A",
+        "accent-soft-dark": "#4A392A",
+
+        "metal-silver": "#B7BCC2",
+        "metal-copper": "#B87333",
+
+        muted: "#8A7360",
+        "muted-dark": "#B8A794",
+
+        border: "#D9C6A8",
+        "border-dark": "#4A392A",
+
+        danger: "#A32638",
+        "danger-dark": "#C7495A",
       },
     },
   },

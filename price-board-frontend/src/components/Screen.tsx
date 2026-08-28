@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { strings } from "../constants/strings";
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ interface ScreenProps {
 }
 
 /**
- * Single responsibility: the shared page shell - safe area, cream
+ * Single responsibility: the shared page shell - safe area, themed
  * background, optional title header - so every role screen looks the same.
  */
 export function Screen({
@@ -33,13 +34,17 @@ export function Screen({
     <View className="px-5 pb-2 pt-4">
       {showBack ? (
         <Pressable onPress={() => router.back()} className="mb-1 self-start py-1">
-          <Text className="text-sm font-semibold text-primary-light">‹ Volver</Text>
+          <Text className="text-sm font-semibold text-primary-light dark:text-accent">
+            {strings.common.back}
+          </Text>
         </Pressable>
       ) : null}
       <View className="flex-row items-start justify-between">
         <View className="flex-1 pr-3">
-          <Text className="text-2xl font-bold text-primary">{title}</Text>
-          {subtitle ? <Text className="mt-1 text-sm text-muted">{subtitle}</Text> : null}
+          <Text className="text-2xl font-bold text-primary dark:text-white">{title}</Text>
+          {subtitle ? (
+            <Text className="mt-1 text-sm text-muted dark:text-muted-dark">{subtitle}</Text>
+          ) : null}
         </View>
         {headerRight}
       </View>
@@ -47,7 +52,7 @@ export function Screen({
   ) : null;
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-background dark:bg-background-dark" edges={["top"]}>
       {header}
       {scroll ? (
         <ScrollView

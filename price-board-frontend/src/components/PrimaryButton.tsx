@@ -15,7 +15,9 @@ export function PrimaryButton({ label, onPress, loading, disabled }: PrimaryButt
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      className={`items-center rounded-2xl py-4 ${isDisabled ? "bg-primary/50" : "bg-primary"}`}
+      className={`items-center rounded-2xl py-4 ${
+        isDisabled ? "bg-primary/50 dark:bg-primary-dark/50" : "bg-primary dark:bg-primary-dark"
+      }`}
     >
       {loading ? (
         <ActivityIndicator color="#FFFFFF" />

@@ -11,6 +11,7 @@ import { CoffeeTypesApi } from "../../src/api/coffeeTypesApi";
 import { getApiErrorMessage } from "../../src/api/apiError";
 import { CoffeeType } from "../../src/types/coffeeType.types";
 import { formatCurrency } from "../../src/utils/format";
+import { strings } from "../../src/constants/strings";
 
 /**
  * ADMIN "tipos de café": every type (active and inactive), a form to
@@ -31,7 +32,7 @@ export default function CoffeeTypesScreen() {
 
   async function createType() {
     if (!newName.trim()) {
-      setRowError("Escribe un nombre para el tipo de café");
+      setRowError(strings.adminCoffeeTypes.missingName);
       return;
     }
     setRowError(null);
@@ -69,7 +70,7 @@ export default function CoffeeTypesScreen() {
     const draft = priceDrafts[type.id];
     const parsed = Number((draft ?? "").replace(",", "."));
     if (!draft || !Number.isFinite(parsed) || parsed < 0) {
-      setRowError("Ingresa un precio válido");
+      setRowError(strings.adminCoffeeTypes.invalidPrice);
       return;
     }
     setBusyId(type.id);
@@ -90,8 +91,10 @@ export default function CoffeeTypesScreen() {
   }
 
   return (
-    <Screen title="Tipos de café" scroll={false}>
-      {rowError ? <Text className="px-1 pb-2 text-sm text-danger">{rowError}</Text> : null}
+    <Screen title={strings.adminCoffeeTypes.title} scroll={false}>
+      {rowError ? (
+        <Text className="px-1 pb-2 text-sm text-danger dark:text-danger-dark">{rowError}</Text>
+      ) : null}
 
       <FlatList
         data={data ?? []}
@@ -100,16 +103,27 @@ export default function CoffeeTypesScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <Card className="mb-1">
-            <Text className="mb-3 text-base font-bold text-primary">Nuevo tipo de café</Text>
-            <FormField label="Nombre" placeholder="Ej. Café Excelso" value={newName} onChangeText={setNewName} />
+            <Text className="mb-3 text-base font-bold text-primary dark:text-white">
+              {strings.adminCoffeeTypes.newTypeTitle}
+            </Text>
             <FormField
-              label="Precio inicial (opcional)"
-              placeholder="Ej. 12000"
+              label={strings.adminCoffeeTypes.nameLabel}
+              placeholder={strings.adminCoffeeTypes.namePlaceholder}
+              value={newName}
+              onChangeText={setNewName}
+            />
+            <FormField
+              label={strings.adminCoffeeTypes.initialPriceLabel}
+              placeholder={strings.adminCoffeeTypes.initialPricePlaceholder}
               keyboardType="numeric"
               value={newPrice}
               onChangeText={setNewPrice}
             />
-            <PrimaryButton label="Crear tipo de café" onPress={createType} loading={creating} />
+            <PrimaryButton
+              label={strings.adminCoffeeTypes.createButton}
+              onPress={createType}
+              loading={creating}
+            />
           </Card>
         }
         renderItem={({ item }) => {
@@ -117,21 +131,27 @@ export default function CoffeeTypesScreen() {
           return (
             <Card>
               <View className="flex-row items-center justify-between">
-                <Text className="flex-1 pr-2 text-base font-semibold text-primary">{item.name}</Text>
+                <Text className="flex-1 pr-2 text-base font-semibold text-primary dark:text-white">
+                  {item.name}
+                </Text>
                 <Badge
-                  label={item.active ? "Activo" : "Inactivo"}
+                  label={
+                    item.active
+                      ? strings.adminCoffeeTypes.statusActive
+                      : strings.adminCoffeeTypes.statusInactive
+                  }
                   tone={item.active ? "accent" : "muted"}
                 />
               </View>
-              <Text className="mt-1 text-sm text-muted">
-                Precio actual: {formatCurrency(item.currentPrice)} / kg
+              <Text className="mt-1 text-sm text-muted dark:text-muted-dark">
+                {strings.adminCoffeeTypes.currentPrice(formatCurrency(item.currentPrice))}
               </Text>
 
               <View className="mt-3 flex-row items-end gap-2">
                 <View className="flex-1">
                   <FormField
-                    label="Nuevo precio"
-                    placeholder="Ej. 12500"
+                    label={strings.adminCoffeeTypes.newPriceLabel}
+                    placeholder={strings.adminCoffeeTypes.newPricePlaceholder}
                     keyboardType="numeric"
                     value={draft}
                     onChangeText={(text) =>
@@ -142,19 +162,23 @@ export default function CoffeeTypesScreen() {
                 <Pressable
                   onPress={() => savePrice(item)}
                   disabled={busyId === item.id}
-                  className="mb-5 items-center rounded-xl bg-primary px-4 py-3"
+                  className="mb-5 items-center rounded-xl bg-primary px-4 py-3 dark:bg-primary-dark"
                 >
-                  <Text className="text-sm font-semibold text-white">Guardar</Text>
+                  <Text className="text-sm font-semibold text-white">
+                    {strings.adminCoffeeTypes.save}
+                  </Text>
                 </Pressable>
               </View>
 
               <Pressable
                 onPress={() => toggleActive(item)}
                 disabled={busyId === item.id}
-                className="items-center rounded-xl border border-border py-2.5"
+                className="items-center rounded-xl border border-border py-2.5 dark:border-border-dark"
               >
-                <Text className="text-sm font-semibold text-primary">
-                  {item.active ? "Desactivar" : "Activar"}
+                <Text className="text-sm font-semibold text-primary dark:text-white">
+                  {item.active
+                    ? strings.adminCoffeeTypes.deactivate
+                    : strings.adminCoffeeTypes.activate}
                 </Text>
               </Pressable>
             </Card>
@@ -165,7 +189,7 @@ export default function CoffeeTypesScreen() {
             isLoading={isLoading}
             error={error}
             isEmpty={!isLoading && !error}
-            emptyText="Aún no hay tipos de café. Crea el primero arriba."
+            emptyText={strings.adminCoffeeTypes.empty}
             onRetry={reload}
           >
             <View />

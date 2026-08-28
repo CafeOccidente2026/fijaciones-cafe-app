@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useAuth } from "../src/auth/AuthContext";
 import { FormField } from "../src/components/FormField";
 import { PrimaryButton } from "../src/components/PrimaryButton";
+import { strings } from "../src/constants/strings";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function LoginScreen() {
 
   async function handleSubmit() {
     if (!username.trim() || !password) {
-      setErrorMessage("Ingresa tu usuario y contraseña");
+      setErrorMessage(strings.auth.missingFields);
       return;
     }
 
@@ -27,7 +28,7 @@ export default function LoginScreen() {
       await login(username.trim(), password);
       router.replace("/home");
     } catch {
-      setErrorMessage("Usuario o contraseña incorrectos");
+      setErrorMessage(strings.auth.invalidCredentials);
     } finally {
       setIsSubmitting(false);
     }
@@ -35,47 +36,49 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-background"
+      className="flex-1 bg-background dark:bg-background-dark"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
-        <View className="mx-5 rounded-3xl bg-card p-6 shadow-sm">
-          {/* Cuando tengas el logo, reemplaza este bloque por:
-              <Image source={require("../assets/logo.png")} className="h-24 w-24 self-center" /> */}
-          <View className="mb-4 h-20 w-20 self-center items-center justify-center rounded-full bg-accent-light">
+        <View className="mx-5 rounded-3xl border border-border bg-card p-6 dark:border-border-dark dark:bg-card-dark">
+          <View className="mb-4 h-20 w-20 self-center items-center justify-center rounded-full bg-accent-soft dark:bg-accent-soft-dark">
             <Text className="text-2xl">☕</Text>
           </View>
 
-          <Text className="text-center text-2xl font-bold text-primary">Portal Operativo</Text>
-          <Text className="mb-6 text-center text-sm text-muted">
-            Gestión y Control Agrícola
+          <Text className="text-center text-2xl font-bold text-primary dark:text-white">
+            {strings.auth.portalTitle}
+          </Text>
+          <Text className="mb-6 text-center text-sm text-muted dark:text-muted-dark">
+            {strings.auth.portalSubtitle}
           </Text>
 
           <FormField
-            label="Usuario"
-            placeholder="Ingrese su usuario"
+            label={strings.auth.usernameLabel}
+            placeholder={strings.auth.usernamePlaceholder}
             autoCapitalize="none"
             value={username}
             onChangeText={setUsername}
           />
 
           <FormField
-            label="Contraseña"
-            placeholder="••••••••"
+            label={strings.auth.passwordLabel}
+            placeholder={strings.auth.passwordPlaceholder}
             secureToggle
             value={password}
             onChangeText={setPassword}
           />
 
-          <Text className="mb-5 text-right text-sm text-primary-light">
-            ¿Olvidó su contraseña?
-          </Text>
+          {errorMessage ? (
+            <Text className="mb-4 text-center text-sm text-danger dark:text-danger-dark">
+              {errorMessage}
+            </Text>
+          ) : null}
 
-          {errorMessage && (
-            <Text className="mb-4 text-center text-sm text-danger">{errorMessage}</Text>
-          )}
-
-          <PrimaryButton label="Entrar" onPress={handleSubmit} loading={isSubmitting} />
+          <PrimaryButton
+            label={strings.auth.loginButton}
+            onPress={handleSubmit}
+            loading={isSubmitting}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

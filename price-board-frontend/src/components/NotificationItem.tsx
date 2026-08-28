@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 import { Card } from "./Card";
 import { AppNotification } from "../types/notification.types";
 import { formatDateTime } from "../utils/format";
+import { strings } from "../constants/strings";
 
 interface NotificationItemProps {
   notification: AppNotification;
@@ -19,14 +20,25 @@ export function NotificationItem({ notification, onPress }: NotificationItemProp
     <Card onPress={onPress}>
       <View className="flex-row items-start gap-2">
         <View
-          className={`mt-1.5 h-2 w-2 rounded-full ${notification.read ? "bg-transparent" : "bg-accent"}`}
+          className={`mt-1.5 h-2 w-2 rounded-full ${
+            notification.read ? "bg-transparent" : "bg-accent dark:bg-accent-dark"
+          }`}
         />
         <View className="flex-1">
-          <Text className={`text-base ${notification.read ? "text-primary-light" : "font-semibold text-primary"}`}>
+          <Text
+            className={`text-base ${
+              notification.read
+                ? "text-primary-light dark:text-muted-dark"
+                : "font-semibold text-primary dark:text-white"
+            }`}
+          >
             {notification.message}
           </Text>
-          <Text className="mt-1 text-xs text-muted">
-            De {notification.sender.fullName} · {formatDateTime(notification.createdAt)}
+          <Text className="mt-1 text-xs text-muted dark:text-muted-dark">
+            {strings.notificationsInbox.meta(
+              notification.sender.fullName,
+              formatDateTime(notification.createdAt)
+            )}
           </Text>
         </View>
       </View>

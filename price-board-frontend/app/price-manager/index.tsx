@@ -5,9 +5,11 @@ import { Screen } from "../../src/components/Screen";
 import { Card } from "../../src/components/Card";
 import { Badge } from "../../src/components/Badge";
 import { StateView } from "../../src/components/StateView";
+import { LogoutButton } from "../../src/components/LogoutButton";
 import { useAsync } from "../../src/hooks/useAsync";
 import { PriceFixingsApi } from "../../src/api/priceFixingsApi";
 import { TodaySummaryItem } from "../../src/types/priceFixing.types";
+import { strings } from "../../src/constants/strings";
 
 /**
  * PRICE_MANAGER home: today's fixings grouped by coffee type, each with a
@@ -20,12 +22,17 @@ export default function TodaySummaryScreen() {
   );
 
   return (
-    <Screen title="Fijaciones del día" subtitle="Agrupadas por tipo de café" scroll={false}>
+    <Screen
+      title={strings.priceManagerToday.title}
+      subtitle={strings.priceManagerToday.subtitle}
+      scroll={false}
+      headerRight={<LogoutButton />}
+    >
       <StateView
         isLoading={isLoading}
         error={error}
         isEmpty={!isLoading && !error && (data?.length ?? 0) === 0}
-        emptyText="Hoy todavía no hay fijaciones."
+        emptyText={strings.priceManagerToday.empty}
         onRetry={reload}
       >
         <FlatList
@@ -36,8 +43,10 @@ export default function TodaySummaryScreen() {
           renderItem={({ item }) => (
             <Card onPress={() => router.push(`/price-manager/today-detail/${item.id}`)}>
               <View className="flex-row items-center justify-between">
-                <Text className="flex-1 pr-3 text-base font-semibold text-primary">{item.name}</Text>
-                <Badge label={`${item.count} ${item.count === 1 ? "fijación" : "fijaciones"}`} />
+                <Text className="flex-1 pr-3 text-base font-semibold text-primary dark:text-white">
+                  {item.name}
+                </Text>
+                <Badge label={strings.priceManagerToday.fixingCount(item.count)} />
               </View>
             </Card>
           )}

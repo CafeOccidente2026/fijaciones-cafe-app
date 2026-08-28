@@ -1,3 +1,4 @@
+import path from "path";
 import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -14,6 +15,17 @@ export function createApp(): Application {
   app.use(helmet());
   app.use(cors());
   app.use(express.json());
+
+  // Uploaded profile photos, served with a permissive CORP header so the
+  // mobile app (a different origin) can load the images.
+  app.use(
+    "/uploads",
+    (_req, res, next) => {
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      next();
+    },
+    express.static(path.join(__dirname, "../uploads"))
+  );
 
   app.get("/health", (_req, res) => {
     res.json({ success: true, data: { status: "ok" } });

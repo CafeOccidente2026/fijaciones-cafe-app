@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FlatList, Modal, Pressable, Text, View } from "react-native";
+import { strings } from "../constants/strings";
 
 export interface SelectOption {
   label: string;
@@ -21,7 +22,7 @@ interface SelectProps {
  */
 export function Select({
   label,
-  placeholder = "Selecciona una opción",
+  placeholder = strings.select.placeholder,
   value,
   options,
   onChange,
@@ -33,34 +34,37 @@ export function Select({
   return (
     <View className="mb-5">
       {label ? (
-        <Text className="mb-2 text-xs font-semibold tracking-wide text-muted">
+        <Text className="mb-2 text-xs font-semibold tracking-wide text-muted dark:text-muted-dark">
           {label.toUpperCase()}
         </Text>
       ) : null}
 
       <Pressable
         onPress={() => !disabled && setOpen(true)}
-        className={`flex-row items-center justify-between rounded-xl border border-border bg-background px-4 py-3 ${
+        className={`flex-row items-center justify-between rounded-xl border border-border bg-background px-4 py-3 dark:border-border-dark dark:bg-background-dark ${
           disabled ? "opacity-50" : ""
         }`}
       >
-        <Text className={selected ? "text-base text-primary" : "text-base text-muted"}>
+        <Text
+          className={
+            selected ? "text-base text-primary dark:text-white" : "text-base text-muted dark:text-muted-dark"
+          }
+        >
           {selected ? selected.label : placeholder}
         </Text>
-        <Text className="text-muted">▾</Text>
+        <Text className="text-muted dark:text-muted-dark">▾</Text>
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable
-          className="flex-1 justify-center bg-black/50 px-8"
-          onPress={() => setOpen(false)}
-        >
-          <View className="max-h-96 overflow-hidden rounded-2xl bg-card">
+        <Pressable className="flex-1 justify-center bg-black/50 px-8" onPress={() => setOpen(false)}>
+          <View className="max-h-96 overflow-hidden rounded-2xl bg-card dark:bg-card-dark">
             <FlatList
               data={options}
               keyExtractor={(item) => item.value}
               ListEmptyComponent={
-                <Text className="p-4 text-center text-muted">No hay opciones disponibles</Text>
+                <Text className="p-4 text-center text-muted dark:text-muted-dark">
+                  {strings.select.noOptions}
+                </Text>
               }
               renderItem={({ item }) => {
                 const isSelected = item.value === value;
@@ -70,15 +74,21 @@ export function Select({
                       onChange(item.value);
                       setOpen(false);
                     }}
-                    className={`px-4 py-3 ${isSelected ? "bg-accent-light" : ""}`}
+                    className={`px-4 py-3 ${isSelected ? "bg-accent-soft dark:bg-accent-soft-dark" : ""}`}
                   >
-                    <Text className={`text-base ${isSelected ? "font-semibold text-primary" : "text-primary"}`}>
+                    <Text
+                      className={`text-base ${
+                        isSelected
+                          ? "font-semibold text-primary dark:text-white"
+                          : "text-primary dark:text-white"
+                      }`}
+                    >
                       {item.label}
                     </Text>
                   </Pressable>
                 );
               }}
-              ItemSeparatorComponent={() => <View className="h-px bg-border" />}
+              ItemSeparatorComponent={() => <View className="h-px bg-border dark:bg-border-dark" />}
             />
           </View>
         </Pressable>

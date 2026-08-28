@@ -7,6 +7,7 @@ import { FixingDetailCard } from "../../../src/components/FixingDetailCard";
 import { useAsync } from "../../../src/hooks/useAsync";
 import { PriceFixingsApi } from "../../../src/api/priceFixingsApi";
 import { DetailedPriceFixing } from "../../../src/types/priceFixing.types";
+import { strings } from "../../../src/constants/strings";
 
 /**
  * Detailed list of today's fixings for one coffee type - one "ficha" per
@@ -19,15 +20,15 @@ export default function TodayByTypeScreen() {
     [coffeeTypeId]
   );
 
-  const coffeeTypeName = data?.[0]?.coffeeType.name ?? "Detalle del día";
+  const coffeeTypeName = data?.[0]?.coffeeType.name ?? strings.todayDetail.fallbackTitle;
 
   return (
-    <Screen title={coffeeTypeName} subtitle="Fijaciones de hoy" scroll={false} showBack>
+    <Screen title={coffeeTypeName} subtitle={strings.todayDetail.subtitle} scroll={false} showBack>
       <StateView
         isLoading={isLoading}
         error={error}
         isEmpty={!isLoading && !error && (data?.length ?? 0) === 0}
-        emptyText="No hay fijaciones de este tipo hoy."
+        emptyText={strings.todayDetail.empty}
         onRetry={reload}
       >
         <FlatList

@@ -5,16 +5,19 @@ import { Card } from "../../src/components/Card";
 import { StateView } from "../../src/components/StateView";
 import { PrimaryButton } from "../../src/components/PrimaryButton";
 import { useAsync } from "../../src/hooks/useAsync";
+import { useThemeColors } from "../../src/theme/useThemeColors";
 import { UsersApi } from "../../src/api/usersApi";
 import { NotificationsApi } from "../../src/api/notificationsApi";
 import { getApiErrorMessage } from "../../src/api/apiError";
 import { AppUser } from "../../src/types/user.types";
+import { strings } from "../../src/constants/strings";
 
 /**
  * PRICE_MANAGER "enviar notificación": a message plus a target - all
- * producers, or a hand-picked subset.
+ * "fieles de compra", or a hand-picked subset.
  */
 export default function SendNotificationScreen() {
+  const colors = useThemeColors();
   const { data: producers, isLoading, error, reload } = useAsync<AppUser[]>(() =>
     UsersApi.list("PRODUCER")
   );
@@ -43,18 +46,18 @@ export default function SendNotificationScreen() {
   async function submit() {
     setSuccessMessage(null);
     if (!message.trim()) {
-      setFormError("Escribe un mensaje");
+      setFormError(strings.sendNotification.missingMessage);
       return;
     }
     if (recipientIds.length === 0) {
-      setFormError("Selecciona al menos un destinatario");
+      setFormError(strings.sendNotification.missingRecipients);
       return;
     }
     setFormError(null);
     setSubmitting(true);
     try {
       const result = await NotificationsApi.send({ message: message.trim(), recipientIds });
-      setSuccessMessage(`Notificación enviada a ${result.recipientCount} persona(s)`);
+      setSuccessMessage(strings.sendNotification.success(result.recipientCount));
       setMessage("");
       setSelectedIds(new Set());
       setToAll(true);
@@ -66,16 +69,18 @@ export default function SendNotificationScreen() {
   }
 
   return (
-    <Screen title="Enviar notificación">
+    <Screen title={strings.sendNotification.title}>
       <Card>
-        <Text className="mb-2 text-xs font-semibold tracking-wide text-muted">MENSAJE</Text>
+        <Text className="mb-2 text-xs font-semibold tracking-wide text-muted dark:text-muted-dark">
+          {strings.sendNotification.messageLabel.toUpperCase()}
+        </Text>
         <TextInput
-          placeholder="Escribe el mensaje para los productores"
-          placeholderTextColor="#B79A94"
+          placeholder={strings.sendNotification.messagePlaceholder}
+          placeholderTextColor={colors.placeholder}
           multiline
           value={message}
           onChangeText={setMessage}
-          className="min-h-[96px] rounded-xl border border-border bg-background px-4 py-3 text-base text-primary"
+          className="min-h-[96px] rounded-xl border border-border bg-background px-4 py-3 text-base text-primary dark:border-border-dark dark:bg-background-dark dark:text-white"
           style={{ textAlignVertical: "top" }}
         />
       </Card>
@@ -84,20 +89,34 @@ export default function SendNotificationScreen() {
         <Pressable
           onPress={() => setToAll(true)}
           className={`mb-2 flex-row items-center gap-3 rounded-xl border p-3 ${
-            toAll ? "border-accent bg-accent-light" : "border-border"
+            toAll
+              ? "border-accent bg-accent-soft dark:border-accent-dark dark:bg-accent-soft-dark"
+              : "border-border dark:border-border-dark"
           }`}
         >
-          <View className={`h-4 w-4 rounded-full border ${toAll ? "border-accent bg-accent" : "border-muted"}`} />
-          <Text className="text-base text-primary">A todos los productores</Text>
+          <View
+            className={`h-4 w-4 rounded-full border ${
+              toAll ? "border-accent bg-accent dark:border-accent-dark dark:bg-accent-dark" : "border-muted"
+            }`}
+          />
+          <Text className="text-base text-primary dark:text-white">{strings.sendNotification.toAll}</Text>
         </Pressable>
         <Pressable
           onPress={() => setToAll(false)}
           className={`flex-row items-center gap-3 rounded-xl border p-3 ${
-            !toAll ? "border-accent bg-accent-light" : "border-border"
+            !toAll
+              ? "border-accent bg-accent-soft dark:border-accent-dark dark:bg-accent-soft-dark"
+              : "border-border dark:border-border-dark"
           }`}
         >
-          <View className={`h-4 w-4 rounded-full border ${!toAll ? "border-accent bg-accent" : "border-muted"}`} />
-          <Text className="text-base text-primary">Elegir productores específicos</Text>
+          <View
+            className={`h-4 w-4 rounded-full border ${
+              !toAll ? "border-accent bg-accent dark:border-accent-dark dark:bg-accent-dark" : "border-muted"
+            }`}
+          />
+          <Text className="text-base text-primary dark:text-white">
+            {strings.sendNotification.toSpecific}
+          </Text>
         </Pressable>
       </Card>
 
@@ -106,7 +125,7 @@ export default function SendNotificationScreen() {
           isLoading={isLoading}
           error={error}
           isEmpty={!isLoading && !error && (producers?.length ?? 0) === 0}
-          emptyText="No hay productores registrados."
+          emptyText={strings.sendNotification.empty}
           onRetry={reload}
         >
           <Card>
@@ -116,19 +135,21 @@ export default function SendNotificationScreen() {
                 <Pressable
                   key={producer.id}
                   onPress={() => toggle(producer.id)}
-                  className="flex-row items-center gap-3 border-b border-border py-3"
+                  className="flex-row items-center gap-3 border-b border-border py-3 dark:border-border-dark"
                 >
                   <View
                     className={`h-5 w-5 items-center justify-center rounded border ${
-                      checked ? "border-accent bg-accent" : "border-muted"
+                      checked
+                        ? "border-accent bg-accent dark:border-accent-dark dark:bg-accent-dark"
+                        : "border-muted"
                     }`}
                   >
                     {checked ? <Text className="text-xs font-bold text-white">✓</Text> : null}
                   </View>
                   <View className="flex-1">
-                    <Text className="text-base text-primary">{producer.fullName}</Text>
-                    <Text className="text-xs text-muted">
-                      {producer.municipality ?? "Sin municipio"}
+                    <Text className="text-base text-primary dark:text-white">{producer.fullName}</Text>
+                    <Text className="text-xs text-muted dark:text-muted-dark">
+                      {producer.municipality ?? strings.common.noMunicipality}
                     </Text>
                   </View>
                 </Pressable>
@@ -138,14 +159,18 @@ export default function SendNotificationScreen() {
         </StateView>
       ) : null}
 
-      {formError ? <Text className="text-sm text-danger">{formError}</Text> : null}
+      {formError ? (
+        <Text className="text-sm text-danger dark:text-danger-dark">{formError}</Text>
+      ) : null}
       {successMessage ? (
-        <View className="rounded-xl bg-accent-light p-3">
-          <Text className="text-center text-sm font-semibold text-primary">{successMessage}</Text>
+        <View className="rounded-xl bg-accent-soft p-3 dark:bg-accent-soft-dark">
+          <Text className="text-center text-sm font-semibold text-primary dark:text-white">
+            {successMessage}
+          </Text>
         </View>
       ) : null}
 
-      <PrimaryButton label="Enviar" onPress={submit} loading={submitting} />
+      <PrimaryButton label={strings.sendNotification.sendButton} onPress={submit} loading={submitting} />
     </Screen>
   );
 }

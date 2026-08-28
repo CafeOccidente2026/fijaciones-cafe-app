@@ -1,48 +1,72 @@
 import React, { useState } from "react";
 import { Pressable, Text, TextInput, TextInputProps, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useThemeColors } from "../theme/useThemeColors";
+import { strings } from "../constants/strings";
+
+type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
+
+interface RightIcon {
+  name: IoniconName;
+  onPress: () => void;
+  accessibilityLabel?: string;
+}
 
 interface FormFieldProps extends TextInputProps {
   label: string;
   /**
-   * Muestra un boton de "ojo" a la derecha para revelar u ocultar el
-   * texto. Pensado para campos de contraseña; el campo empieza oculto.
+   * Adds an eye button inside the field to reveal/hide the text. The
+   * field starts hidden. Built on top of the generic `rightIcon` slot.
    */
   secureToggle?: boolean;
+  /** Generic tappable icon shown inside the field, on the right. */
+  rightIcon?: RightIcon;
 }
 
 /**
  * Single responsibility: one styled labeled text input, reused across
- * every form in the app (login, create user, etc.) for visual consistency.
+ * every form. Optionally shows a tappable icon on the right (generic, or
+ * the password reveal toggle via `secureToggle`).
  */
-export function FormField({ label, secureToggle = false, ...inputProps }: FormFieldProps) {
+export function FormField({ label, secureToggle = false, rightIcon, ...inputProps }: FormFieldProps) {
+  const colors = useThemeColors();
   const [isHidden, setIsHidden] = useState(true);
+
   const isSecure = secureToggle ? isHidden : inputProps.secureTextEntry;
+
+  const effectiveRightIcon: RightIcon | undefined = secureToggle
+    ? {
+        name: isHidden ? "eye-off-outline" : "eye-outline",
+        onPress: () => setIsHidden((prev) => !prev),
+        accessibilityLabel: isHidden ? strings.auth.showPassword : strings.auth.hidePassword,
+      }
+    : rightIcon;
 
   return (
     <View className="mb-5">
-      <Text className="mb-2 text-xs font-semibold tracking-wide text-muted">
+      <Text className="mb-2 text-xs font-semibold tracking-wide text-muted dark:text-muted-dark">
         {label.toUpperCase()}
       </Text>
       <View>
         <TextInput
-          placeholderTextColor="#B79A94"
-          className={`rounded-xl border border-border bg-background px-4 py-3 text-base text-primary ${
-            secureToggle ? "pr-12" : ""
+          placeholderTextColor={colors.placeholder}
+          className={`rounded-xl border border-border bg-background px-4 py-3 text-base text-primary dark:border-border-dark dark:bg-background-dark dark:text-white ${
+            effectiveRightIcon ? "pr-12" : ""
           }`}
           {...inputProps}
           secureTextEntry={isSecure}
         />
-        {secureToggle && (
+        {effectiveRightIcon ? (
           <Pressable
-            onPress={() => setIsHidden((prev) => !prev)}
+            onPress={effectiveRightIcon.onPress}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityLabel={isHidden ? "Mostrar contraseña" : "Ocultar contraseña"}
+            accessibilityLabel={effectiveRightIcon.accessibilityLabel}
             className="absolute bottom-0 right-1 top-0 justify-center px-2"
           >
-            <Text className="text-lg">{isHidden ? "👁️" : "🙈"}</Text>
+            <Ionicons name={effectiveRightIcon.name} size={20} color={colors.muted} />
           </Pressable>
-        )}
+        ) : null}
       </View>
     </View>
   );

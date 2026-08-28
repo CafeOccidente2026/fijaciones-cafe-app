@@ -8,12 +8,14 @@ import { FormField } from "../../src/components/FormField";
 import { PrimaryButton } from "../../src/components/PrimaryButton";
 import { PriceHighlightCard } from "../../src/components/PriceHighlightCard";
 import { ConfirmModal } from "../../src/components/ConfirmModal";
+import { LogoutButton } from "../../src/components/LogoutButton";
 import { useAsync } from "../../src/hooks/useAsync";
 import { CoffeeTypesApi } from "../../src/api/coffeeTypesApi";
 import { PriceFixingsApi } from "../../src/api/priceFixingsApi";
 import { getApiErrorMessage } from "../../src/api/apiError";
 import { CoffeeType } from "../../src/types/coffeeType.types";
 import { formatCurrency } from "../../src/utils/format";
+import { strings } from "../../src/constants/strings";
 
 /**
  * Producer home: pick a coffee type, enter kilos, and "fijar" the price
@@ -48,11 +50,11 @@ export default function FixPriceScreen() {
   function openConfirm() {
     setSuccessMessage(null);
     if (!selectedType) {
-      setFormError("Selecciona un tipo de cafe");
+      setFormError(strings.producerFix.selectCoffeeType);
       return;
     }
     if (!kilosAreValid) {
-      setFormError("Ingresa una cantidad de kilos valida");
+      setFormError(strings.producerFix.invalidKilos);
       return;
     }
     setFormError(null);
@@ -66,7 +68,7 @@ export default function FixPriceScreen() {
       await PriceFixingsApi.create({ coffeeTypeId: selectedType.id, kilos: parsedKilos });
       setConfirmOpen(false);
       setKilos("");
-      setSuccessMessage("Tu fijación fue registrada correctamente");
+      setSuccessMessage(strings.producerFix.success);
     } catch (err) {
       setConfirmOpen(false);
       setFormError(getApiErrorMessage(err));
@@ -76,12 +78,12 @@ export default function FixPriceScreen() {
   }
 
   return (
-    <Screen title="Fijar precio">
+    <Screen title={strings.producerFix.title} headerRight={<LogoutButton />}>
       <StateView
         isLoading={isLoading}
         error={error}
         isEmpty={!isLoading && !error && (coffeeTypes?.length ?? 0) === 0}
-        emptyText="Aún no hay tipos de café disponibles."
+        emptyText={strings.producerFix.emptyCoffeeTypes}
         onRetry={reload}
       >
         {selectedType ? (
@@ -94,7 +96,7 @@ export default function FixPriceScreen() {
 
             <Card>
               <Select
-                label="Tipo de cafe"
+                label={strings.producerFix.coffeeTypeLabel}
                 value={selectedId}
                 options={(coffeeTypes ?? []).map((type) => ({ label: type.name, value: type.id }))}
                 onChange={(value) => {
@@ -104,8 +106,8 @@ export default function FixPriceScreen() {
               />
 
               <FormField
-                label="Kilos a fijar"
-                placeholder="Ej. 27"
+                label={strings.producerFix.kilosLabel}
+                placeholder={strings.producerFix.kilosPlaceholder}
                 keyboardType="numeric"
                 value={kilos}
                 onChangeText={(text) => {
@@ -114,14 +116,18 @@ export default function FixPriceScreen() {
                 }}
               />
 
-              {formError ? <Text className="mb-3 text-sm text-danger">{formError}</Text> : null}
+              {formError ? (
+                <Text className="mb-3 text-sm text-danger dark:text-danger-dark">{formError}</Text>
+              ) : null}
               {successMessage ? (
-                <View className="mb-3 rounded-xl bg-accent-light p-3">
-                  <Text className="text-center text-sm font-semibold text-primary">{successMessage}</Text>
+                <View className="mb-3 rounded-xl bg-accent-soft p-3 dark:bg-accent-soft-dark">
+                  <Text className="text-center text-sm font-semibold text-primary dark:text-white">
+                    {successMessage}
+                  </Text>
                 </View>
               ) : null}
 
-              <PrimaryButton label="Fijar precio" onPress={openConfirm} />
+              <PrimaryButton label={strings.producerFix.fixButton} onPress={openConfirm} />
             </Card>
           </>
         ) : null}
@@ -131,13 +137,15 @@ export default function FixPriceScreen() {
         visible={confirmOpen}
         message={
           selectedType
-            ? `¿Está seguro que desea fijar ${parsedKilos} kg de café ${selectedType.name} a ${formatCurrency(
-                selectedType.currentPrice
-              )}?`
+            ? strings.producerFix.confirmMessage(
+                parsedKilos,
+                selectedType.name,
+                formatCurrency(selectedType.currentPrice)
+              )
             : ""
         }
-        confirmLabel="Aceptar"
-        cancelLabel="Cancelar"
+        confirmLabel={strings.common.accept}
+        cancelLabel={strings.common.cancel}
         loading={submitting}
         onConfirm={confirmFixing}
         onCancel={() => setConfirmOpen(false)}

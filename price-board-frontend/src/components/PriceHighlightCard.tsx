@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 import { formatCurrency, formatDate } from "../utils/format";
+import { strings } from "../constants/strings";
 
 interface PriceHighlightCardProps {
   coffeeTypeName: string;
@@ -14,14 +15,16 @@ interface PriceHighlightCardProps {
  */
 export function PriceHighlightCard({ coffeeTypeName, price, updatedAt }: PriceHighlightCardProps) {
   return (
-    <View className="rounded-3xl bg-primary p-6">
+    <View className="rounded-3xl border-l-4 border-metal-copper bg-primary p-6 dark:bg-primary-dark">
       <Text className="text-sm font-medium uppercase tracking-wide text-white/70">
-        Precio actual
+        {strings.priceCard.label}
       </Text>
       <Text className="mt-1 text-base text-white/90">{coffeeTypeName}</Text>
       <Text className="mt-2 text-4xl font-bold text-white">{formatCurrency(price)}</Text>
-      <Text className="mt-1 text-xs text-white/60">por kg</Text>
-      <Text className="mt-4 text-xs text-white/60">Actualizado el {formatDate(updatedAt)}</Text>
+      <Text className="mt-1 text-xs text-white/60">{strings.priceCard.perKg}</Text>
+      <Text className="mt-4 text-xs text-white/60">
+        {strings.priceCard.updatedOn(formatDate(updatedAt))}
+      </Text>
     </View>
   );
 }

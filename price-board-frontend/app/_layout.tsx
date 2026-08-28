@@ -2,9 +2,13 @@ import "../global.css";
 import React, { useCallback, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Stack, useRouter } from "expo-router";
-import { View, Modal, Text, Pressable } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { View, Modal, Text, Pressable, ActivityIndicator } from "react-native";
 import { AuthProvider } from "../src/auth/AuthContext";
 import { useInactivityLogout } from "../src/auth/useInactivityLogout";
+import { ThemeProvider, useTheme } from "../src/theme/ThemeContext";
+import { useThemeColors } from "../src/theme/useThemeColors";
+import { strings } from "../src/constants/strings";
 
 /**
  * Wraps every screen so any touch anywhere resets the inactivity timer.
@@ -32,13 +36,18 @@ function InactivityGate({ children }: { children: React.ReactNode }) {
 
       <Modal visible={showTimeoutModal} transparent animationType="fade">
         <View className="flex-1 items-center justify-center bg-black/50 px-8">
-          <View className="w-full rounded-2xl bg-card p-6">
-            <Text className="mb-2 text-lg font-bold text-primary">Sesión cerrada</Text>
-            <Text className="mb-5 text-muted">
-              Pasó mucho tiempo de inactividad. Por seguridad, inicia sesión nuevamente.
+          <View className="w-full rounded-2xl bg-card p-6 dark:bg-card-dark">
+            <Text className="mb-2 text-lg font-bold text-primary dark:text-primary-dark">
+              {strings.inactivity.title}
             </Text>
-            <Pressable onPress={acknowledgeAndGoToLogin} className="rounded-xl bg-primary py-3">
-              <Text className="text-center font-semibold text-white">Entendido</Text>
+            <Text className="mb-5 text-muted dark:text-muted-dark">{strings.inactivity.message}</Text>
+            <Pressable
+              onPress={acknowledgeAndGoToLogin}
+              className="rounded-xl bg-primary py-3 dark:bg-primary-dark"
+            >
+              <Text className="text-center font-semibold text-white">
+                {strings.inactivity.acknowledge}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -47,14 +56,37 @@ function InactivityGate({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Holds rendering until the saved theme preference has been read. */
+function ThemedApp() {
+  const { isReady, resolvedTheme } = useTheme();
+  const colors = useThemeColors();
+
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <StatusBar style={resolvedTheme === "dark" ? "light" : "dark"} />
+      <AuthProvider>
+        <InactivityGate>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
+        </InactivityGate>
+      </AuthProvider>
+    </View>
+  );
+}
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <InactivityGate>
-          <Stack screenOptions={{ headerShown: false }} />
-        </InactivityGate>
-      </AuthProvider>
+      <ThemeProvider>
+        <ThemedApp />
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

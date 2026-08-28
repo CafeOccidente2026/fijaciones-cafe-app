@@ -40,4 +40,24 @@ export class UsersApi {
     const { data } = await httpClient.patch("/users/me/profile-photo", { profilePhotoUrl });
     return data.data as AppUser;
   }
+
+  /**
+   * Uploads a real image file (from the camera or gallery). On React
+   * Native we set "multipart/form-data" without a boundary on purpose:
+   * the RN network layer fills in the boundary. We never send JSON here.
+   */
+  static async uploadProfilePhoto(file: {
+    uri: string;
+    name: string;
+    type: string;
+  }): Promise<AppUser> {
+    const formData = new FormData();
+    // React Native's FormData accepts this {uri,name,type} shape for files.
+    formData.append("photo", file as unknown as Blob);
+
+    const { data } = await httpClient.post("/users/me/profile-photo-upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data.data as AppUser;
+  }
 }

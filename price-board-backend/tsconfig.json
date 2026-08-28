@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
     "outDir": "dist",
     "rootDir": "src",
@@ -15,11 +15,7 @@
     "sourceMap": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "baseUrl": "src",
-    "paths": {
-      "@/*": ["*"]
-    }
+    "noImplicitReturns": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

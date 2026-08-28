@@ -5,7 +5,16 @@
     "version": "1.0.0",
     "scheme": "priceboard",
     "orientation": "portrait",
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "La app necesita acceso a tus fotos para elegir una imagen de perfil.",
+          "cameraPermission": "La app necesita acceso a la cámara para tomar tu foto de perfil."
+        }
+      ]
+    ],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {

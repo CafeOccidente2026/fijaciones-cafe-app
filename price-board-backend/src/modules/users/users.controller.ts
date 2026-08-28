@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UsersService } from "./users.service";
 import { createUserSchema, listUsersQuerySchema, updateProfilePhotoSchema } from "./users.validation";
 import { ApiResponse, AppError } from "../../utils/apiResponse.util";
+import { env } from "../../config/env";
 
 /**
  * Single responsibility: translate HTTP <-> UsersService calls.
@@ -40,6 +41,24 @@ export class UsersController {
     }
 
     const user = await UsersService.updateMyProfilePhoto(req.auth!.userId, parsed.data.profilePhotoUrl);
+    ApiResponse.success(res, user);
+  }
+
+  /**
+   * Multipart upload of a real image file (handled by `uploadProfilePhoto`
+   * middleware). Builds an absolute URL for the saved file and reuses the
+   * same service call as the URL-based endpoint.
+   */
+  static async uploadProfilePhotoFile(req: Request, res: Response): Promise<void> {
+    const file = req.file;
+    if (!file) {
+      throw new AppError("No se envio ninguna imagen.", 422);
+    }
+
+    const baseUrl = env.PUBLIC_BASE_URL ?? `${req.protocol}://${req.get("host")}`;
+    const photoUrl = `${baseUrl}/uploads/profile-photos/${file.filename}`;
+
+    const user = await UsersService.updateMyProfilePhoto(req.auth!.userId, photoUrl);
     ApiResponse.success(res, user);
   }
 

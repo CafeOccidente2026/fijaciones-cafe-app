@@ -8,11 +8,11 @@ interface CardProps {
 }
 
 /**
- * Single responsibility: the white rounded container used everywhere for
- * list items and panels. Becomes pressable when given onPress.
+ * Single responsibility: the card container used everywhere for list
+ * items and panels. Becomes pressable when given onPress.
  */
 export function Card({ children, onPress, className = "" }: CardProps) {
-  const base = `rounded-2xl bg-card p-4 shadow-sm ${className}`;
+  const base = `rounded-2xl border border-border bg-card p-4 dark:border-border-dark dark:bg-card-dark ${className}`;
 
   if (onPress) {
     return (
