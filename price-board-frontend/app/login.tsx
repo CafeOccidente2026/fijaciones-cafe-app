@@ -26,7 +26,11 @@ export default function LoginScreen() {
     try {
       await login(username.trim(), password);
       router.replace("/home");
-    } catch {
+    } catch (error) {
+      // TEMP DEBUG: distingue error de RED (Network Error / ECONNABORTED,
+      // no llega al backend) de un 401 real. Quitar este bloque al terminar.
+      const e = error as { message?: string; code?: string; response?: { status?: number; data?: unknown } };
+      console.log("[DEBUG] login error:", e.message, "code:", e.code, "status:", e.response?.status, "data:", e.response?.data);
       setErrorMessage("Usuario o contraseña incorrectos");
     } finally {
       setIsSubmitting(false);
@@ -62,7 +66,7 @@ export default function LoginScreen() {
           <FormField
             label="Contraseña"
             placeholder="••••••••"
-            secureTextEntry
+            secureToggle
             value={password}
             onChangeText={setPassword}
           />
