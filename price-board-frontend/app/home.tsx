@@ -1,37 +1,33 @@
 import React from "react";
-import { Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { Redirect } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
 import { useAuth } from "../src/auth/AuthContext";
-import { PrimaryButton } from "../src/components/PrimaryButton";
+import { UserRole } from "../src/types/auth.types";
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Administrador",
-  PRICE_MANAGER: "Encargado de precios",
-  PRODUCER: "Productor",
+const HOME_BY_ROLE: Record<UserRole, string> = {
+  PRODUCER: "/producer",
+  PRICE_MANAGER: "/price-manager",
+  ADMIN: "/admin",
 };
 
 /**
- * Placeholder screen. In the next phase this gets replaced by three
- * separate role-specific home screens (Productor / Encargado / Admin).
+ * Single responsibility: send a logged-in user to the home of their role
+ * group. Anything that used to navigate to "/home" keeps working.
  */
-export default function HomeScreen() {
-  const { user, logout } = useAuth();
-  const router = useRouter();
+export default function Home() {
+  const { user, isLoading } = useAuth();
 
-  async function handleLogout() {
-    await logout();
-    router.replace("/login");
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" color="#3E2723" />
+      </View>
+    );
   }
 
-  return (
-    <View className="flex-1 items-center justify-center bg-background px-6">
-      <Text className="text-xl font-bold text-primary">¡Hola, {user?.fullName}!</Text>
-      <Text className="mb-8 text-muted">
-        Rol: {user ? ROLE_LABELS[user.role] : ""}
-      </Text>
-      <View className="w-full">
-        <PrimaryButton label="Cerrar sesión" onPress={handleLogout} />
-      </View>
-    </View>
-  );
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
+
+  return <Redirect href={HOME_BY_ROLE[user.role]} />;
 }

@@ -3,11 +3,6 @@ import { SecureTokenStorage } from "../auth/secureTokenStorage";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
-// TEMP DEBUG: confirma que Expo inyecto la variable de entorno. Recuerda
-// que EXPO_PUBLIC_* se resuelve en build time: si cambiaste el .env hay
-// que reiniciar con `npx expo start -c`. Quitar esta linea al terminar.
-console.log("[DEBUG] API_URL =", API_URL);
-
 export const httpClient = axios.create({ baseURL: API_URL });
 
 /**

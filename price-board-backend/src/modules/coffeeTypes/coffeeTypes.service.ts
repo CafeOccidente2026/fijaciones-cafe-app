@@ -1,0 +1,66 @@
+import { CoffeeType, Role } from "@prisma/client";
+import { CoffeeTypesRepository } from "./coffeeTypes.repository";
+import { AppError } from "../../utils/apiResponse.util";
+import { CreateCoffeeTypeInput } from "./coffeeTypes.validation";
+
+/** Prisma returns Decimal objects; the API always sends plain numbers. */
+function serialize(coffeeType: CoffeeType) {
+  return {
+    id: coffeeType.id,
+    name: coffeeType.name,
+    active: coffeeType.active,
+    currentPrice: Number(coffeeType.currentPrice),
+    createdAt: coffeeType.createdAt,
+    updatedAt: coffeeType.updatedAt,
+  };
+}
+
+/**
+ * Single responsibility: business rules for coffee types and their price.
+ * PRODUCER only ever sees active types; ADMIN can opt into inactive ones.
+ */
+export class CoffeeTypesService {
+  static async list(role: Role, includeInactive: boolean) {
+    const canSeeInactive = role === Role.ADMIN && includeInactive;
+    const rows = await CoffeeTypesRepository.findMany(canSeeInactive);
+    return rows.map(serialize);
+  }
+
+  static async getById(id: string) {
+    const coffeeType = await CoffeeTypesRepository.findById(id);
+    if (!coffeeType) {
+      throw new AppError("Tipo de cafe no encontrado", 404);
+    }
+    return coffeeType;
+  }
+
+  static async create(input: CreateCoffeeTypeInput) {
+    const existing = await CoffeeTypesRepository.findByName(input.name);
+    if (existing) {
+      throw new AppError("Ya existe un tipo de cafe con ese nombre", 409);
+    }
+
+    const created = await CoffeeTypesRepository.create({
+      name: input.name,
+      currentPrice: input.currentPrice,
+    });
+    return serialize(created);
+  }
+
+  /**
+   * Activate/deactivate. Deactivating is the way to "remove" a type
+   * without breaking the price fixings that already reference it - a hard
+   * delete is never exposed, so history stays intact.
+   */
+  static async setActive(id: string, active: boolean) {
+    await this.getById(id);
+    const updated = await CoffeeTypesRepository.setActive(id, active);
+    return serialize(updated);
+  }
+
+  static async changePrice(id: string, price: number, changedById: string) {
+    await this.getById(id);
+    const updated = await CoffeeTypesRepository.changePrice(id, price, changedById);
+    return serialize(updated);
+  }
+}
