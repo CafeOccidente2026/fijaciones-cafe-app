@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Role {
+  ADMIN // Administrador: gestiona usuarios, precios, ve todos los historiales
+  PRICE_MANAGER // Encargado: fija el precio del cafe, ve fijaciones del dia, notifica
+  PRODUCER // Usuario normal: fija (anuncia) kilos de cafe a un precio y tipo
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+model User {
+  id              String     @id @default(uuid())
+  username        String     @unique
+  passwordHash    String
+  fullName        String
+  municipality    String?
+  role            Role
+  status          UserStatus @default(ACTIVE)
+  profilePhotoUrl String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  priceFixings           PriceFixing[]
+  refreshTokens          RefreshToken[]
+  sentNotifications      Notification[]           @relation("SentNotifications")
+  receivedNotifications  NotificationRecipient[]
+  createdByAdmin         String?
+  priceChanges           PriceHistory[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model CoffeeType {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  active       Boolean  @default(true)
+  currentPrice Decimal  @default(0) @db.Decimal(12, 2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  priceFixings PriceFixing[]
+  priceHistory PriceHistory[]
+
+  @@map("coffee_types")
+}
+
+/// Registro de cada cambio de precio, para poder graficar / auditar
+model PriceHistory {
+  id           String     @id @default(uuid())
+  coffeeTypeId String
+  coffeeType   CoffeeType @relation(fields: [coffeeTypeId], references: [id], onDelete: Cascade)
+  price        Decimal    @db.Decimal(12, 2)
+  changedById  String
+  changedBy    User       @relation(fields: [changedById], references: [id])
+  changedAt    DateTime   @default(now())
+
+  @@index([coffeeTypeId])
+  @@map("price_history")
+}
+
+/// Una "fijacion" es cuando un PRODUCER fija kilos de un tipo de cafe a un precio
+model PriceFixing {
+  id            String     @id @default(uuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id])
+  coffeeTypeId  String
+  coffeeType    CoffeeType @relation(fields: [coffeeTypeId], references: [id])
+  kilos         Decimal    @db.Decimal(10, 2)
+  priceAtFixing Decimal    @db.Decimal(12, 2)
+  createdAt     DateTime   @default(now())
+
+  @@index([userId])
+  @@index([coffeeTypeId])
+  @@index([createdAt])
+  @@map("price_fixings")
+}
+
+model Notification {
+  id         String                   @id @default(uuid())
+  senderId   String
+  sender     User                     @relation("SentNotifications", fields: [senderId], references: [id])
+  message    String
+  createdAt  DateTime                 @default(now())
+  recipients NotificationRecipient[]
+
+  @@map("notifications")
+}
+
+/// Tabla puente: permite notificaciones dirigidas a un usuario o broadcast a varios
+model NotificationRecipient {
+  id             String       @id @default(uuid())
+  notificationId String
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  read           Boolean      @default(false)
+  readAt         DateTime?
+
+  @@index([userId])
+  @@map("notification_recipients")
+}
