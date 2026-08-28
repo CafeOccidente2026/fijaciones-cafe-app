@@ -1,24 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FlatList } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Screen } from "../../../src/components/Screen";
 import { StateView } from "../../../src/components/StateView";
 import { FixingDetailCard } from "../../../src/components/FixingDetailCard";
 import { useAsync } from "../../../src/hooks/useAsync";
+import { useTodayNovelty } from "../../../src/hooks/useTodayNovelty";
+import { useAuth } from "../../../src/auth/AuthContext";
 import { PriceFixingsApi } from "../../../src/api/priceFixingsApi";
 import { DetailedPriceFixing } from "../../../src/types/priceFixing.types";
 import { strings } from "../../../src/constants/strings";
 
 /**
  * Detailed list of today's fixings for one coffee type - one "ficha" per
- * fixing (producer name, municipality, date/time, kilos and price).
+ * fixing. Opening this screen marks that type's fixings as reviewed, so
+ * the "nuevas" badge on the previous screen clears.
  */
 export default function TodayByTypeScreen() {
   const { coffeeTypeId } = useLocalSearchParams<{ coffeeTypeId: string }>();
+  const { user } = useAuth();
+  const { markSeen } = useTodayNovelty(user?.id);
   const { data, isLoading, error, reload } = useAsync<DetailedPriceFixing[]>(
     () => PriceFixingsApi.todayByType(coffeeTypeId),
     [coffeeTypeId]
   );
+
+  useEffect(() => {
+    if (data) {
+      void markSeen(coffeeTypeId, data.length);
+    }
+  }, [data, coffeeTypeId, markSeen]);
 
   const coffeeTypeName = data?.[0]?.coffeeType.name ?? strings.todayDetail.fallbackTitle;
 

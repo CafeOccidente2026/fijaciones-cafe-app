@@ -20,7 +20,7 @@ export const strings = {
 
   roles: {
     PRODUCER: "Fiel de Compra",
-    PRICE_MANAGER: "Encargado de precios",
+    PRICE_MANAGER: "Encargado",
     ADMIN: "Administrador",
   } as Record<string, string>,
 
@@ -31,7 +31,7 @@ export const strings = {
 
   auth: {
     portalTitle: "Portal Operativo",
-    portalSubtitle: "Gestión y Control Agrícola",
+    portalSubtitle: "Gestión y Control de Fijaciones",
     usernameLabel: "Usuario",
     usernamePlaceholder: "Ingrese su usuario",
     passwordLabel: "Contraseña",
@@ -76,8 +76,9 @@ export const strings = {
     title: "Fijar precio",
     coffeeTypeLabel: "Tipo de café",
     kilosLabel: "Kilos a fijar",
-    kilosPlaceholder: "Ej. 27",
+    kilosPrefix: "Kg: ",
     fixButton: "Fijar precio",
+    priceUpdatesBadge: "tipos con precio actualizado sin ver",
     selectCoffeeType: "Selecciona un tipo de café",
     invalidKilos: "Ingresa una cantidad de kilos válida",
     confirmMessage: (kilos: number, coffeeType: string, price: string) =>
@@ -132,7 +133,9 @@ export const strings = {
     title: "Fijaciones del día",
     subtitle: "Agrupadas por tipo de café",
     empty: "Hoy todavía no hay fijaciones.",
-    fixingCount: (count: number) => `${count} ${count === 1 ? "fijación" : "fijaciones"}`,
+    fixingCount: (count: number) =>
+      `${count} ${count === 1 ? "fijación hoy" : "fijaciones hoy"}`,
+    newCount: (count: number) => `${count} ${count === 1 ? "nueva" : "nuevas"}`,
   },
 
   todayDetail: {
@@ -155,7 +158,8 @@ export const strings = {
     fromLabel: "Desde",
     toLabel: "Hasta",
     datePlaceholder: "AAAA-MM-DD",
-    applyFilters: "Aplicar filtros",
+    applyFilter: "Aplicar filtro",
+    filterButton: "Filtro",
     empty: "No hay fijaciones que coincidan con los filtros.",
   },
 

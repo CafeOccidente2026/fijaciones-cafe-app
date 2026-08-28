@@ -31,7 +31,7 @@ export function LogoutButton() {
       hitSlop={10}
       accessibilityRole="button"
       accessibilityLabel={strings.logout.accessibilityLabel}
-      className="p-1"
+      className="rounded-lg p-1 hover:opacity-80 active:opacity-60"
     >
       <Ionicons name="log-out-outline" size={24} color={colors.primary} />
     </Pressable>

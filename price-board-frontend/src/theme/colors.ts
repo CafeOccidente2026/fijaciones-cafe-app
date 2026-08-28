@@ -23,7 +23,7 @@ export interface ThemeColors {
 }
 
 export const lightColors: ThemeColors = {
-  background: "#EFE3D0",
+  background: "#EEF2DF",
   card: "#FBF6EC",
   primary: "#6E1423",
   primaryLight: "#8C1D2E",
@@ -31,7 +31,7 @@ export const lightColors: ThemeColors = {
   accentSoft: "#D8C39A",
   metalSilver: "#B7BCC2",
   metalCopper: "#B87333",
-  muted: "#8A7360",
+  muted: "#7E6553",
   border: "#D9C6A8",
   danger: "#A32638",
   onPrimary: "#FBF6EC",
@@ -39,7 +39,7 @@ export const lightColors: ThemeColors = {
 };
 
 export const darkColors: ThemeColors = {
-  background: "#241B14",
+  background: "#1B2410",
   card: "#332619",
   primary: "#9A2E3F",
   primaryLight: "#8C1D2E",
@@ -47,7 +47,7 @@ export const darkColors: ThemeColors = {
   accentSoft: "#4A392A",
   metalSilver: "#B7BCC2",
   metalCopper: "#B87333",
-  muted: "#B8A794",
+  muted: "#BEAD9B",
   border: "#4A392A",
   danger: "#C7495A",
   onPrimary: "#FBF6EC",

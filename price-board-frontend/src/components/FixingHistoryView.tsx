@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, Pressable, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Screen } from "./Screen";
 import { Card } from "./Card";
 import { StateView } from "./StateView";
@@ -7,6 +8,7 @@ import { Select, SelectOption } from "./Select";
 import { FormField } from "./FormField";
 import { PrimaryButton } from "./PrimaryButton";
 import { FixingDetailCard } from "./FixingDetailCard";
+import { useThemeColors } from "../theme/useThemeColors";
 import { CoffeeTypesApi } from "../api/coffeeTypesApi";
 import { UsersApi } from "../api/usersApi";
 import { PriceFixingsApi } from "../api/priceFixingsApi";
@@ -20,15 +22,18 @@ interface FixingHistoryViewProps {
 }
 
 /**
- * Single responsibility: the full price-fixing history with filters,
- * shared by PRICE_MANAGER and ADMIN. Server filters: coffee type,
- * municipality, date range (and userId for ADMIN). "Nombre" is matched
- * on the client over the returned rows.
+ * Single responsibility: the full price-fixing history, shared by
+ * PRICE_MANAGER and ADMIN. The filter bar is hidden behind a "Filtro"
+ * header button; applying a filter collapses it again. Filter values are
+ * kept in state so reopening shows what was set.
  */
 export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryViewProps) {
+  const colors = useThemeColors();
+
   const [coffeeTypeOptions, setCoffeeTypeOptions] = useState<SelectOption[]>([]);
   const [userOptions, setUserOptions] = useState<SelectOption[]>([]);
 
+  const [showFilters, setShowFilters] = useState(false);
   const [coffeeTypeId, setCoffeeTypeId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [municipality, setMunicipality] = useState("");
@@ -39,6 +44,9 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
   const [rows, setRows] = useState<DetailedPriceFixing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const hasActiveFilters =
+    !!coffeeTypeId || !!userId || !!municipality.trim() || !!nameQuery.trim() || !!dateFrom.trim() || !!dateTo.trim();
 
   useEffect(() => {
     CoffeeTypesApi.list(true)
@@ -82,9 +90,14 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
 
   useEffect(() => {
     void loadHistory();
-    // Only run on mount; further loads are triggered by the "Aplicar filtros" button.
+    // Only run on mount; further loads are triggered by "Aplicar filtro".
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  function applyFilter() {
+    void loadHistory();
+    setShowFilters(false);
+  }
 
   const visibleRows = useMemo(() => {
     const query = nameQuery.trim().toLowerCase();
@@ -93,62 +106,89 @@ export function FixingHistoryView({ allowUserFilter = false }: FixingHistoryView
   }, [rows, nameQuery]);
 
   return (
-    <Screen title={strings.history.title} subtitle={strings.history.subtitle} scroll={false}>
+    <Screen
+      title={strings.history.title}
+      subtitle={strings.history.subtitle}
+      scroll={false}
+      headerRight={
+        <Pressable
+          onPress={() => setShowFilters((prev) => !prev)}
+          accessibilityRole="button"
+          className="flex-row items-center gap-1 rounded-xl border border-border px-3 py-2 hover:opacity-90 active:opacity-80 dark:border-border-dark"
+        >
+          <Ionicons name="options-outline" size={16} color={colors.primary} />
+          <Text className="text-sm font-semibold text-primary dark:text-white">
+            {strings.history.filterButton}
+          </Text>
+          {hasActiveFilters ? (
+            <View className="h-2 w-2 rounded-full bg-danger dark:bg-danger-dark" />
+          ) : null}
+        </Pressable>
+      }
+    >
       <FlatList
         data={visibleRows}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 24, gap: 12 }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 24, paddingTop: 4, gap: 12 }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
         ListHeaderComponent={
-          <Card className="mb-1">
-            <Select
-              label={strings.history.coffeeTypeFilterLabel}
-              value={coffeeTypeId ?? ""}
-              options={coffeeTypeOptions}
-              onChange={(value) => setCoffeeTypeId(value || null)}
-            />
-            {allowUserFilter ? (
+          showFilters ? (
+            <Card className="mb-2">
               <Select
-                label={strings.history.userFilterLabel}
-                value={userId ?? ""}
-                options={userOptions}
-                onChange={(value) => setUserId(value || null)}
+                label={strings.history.coffeeTypeFilterLabel}
+                value={coffeeTypeId ?? ""}
+                options={coffeeTypeOptions}
+                onChange={(value) => setCoffeeTypeId(value || null)}
               />
-            ) : null}
-            <FormField
-              label={strings.history.municipalityLabel}
-              placeholder={strings.history.municipalityPlaceholder}
-              value={municipality}
-              onChangeText={setMunicipality}
-            />
-            <FormField
-              label={strings.history.nameLabel}
-              placeholder={strings.history.namePlaceholder}
-              value={nameQuery}
-              onChangeText={setNameQuery}
-            />
-            <View className="flex-row gap-3">
-              <View className="flex-1">
-                <FormField
-                  label={strings.history.fromLabel}
-                  placeholder={strings.history.datePlaceholder}
-                  autoCapitalize="none"
-                  value={dateFrom}
-                  onChangeText={setDateFrom}
+              {allowUserFilter ? (
+                <Select
+                  label={strings.history.userFilterLabel}
+                  value={userId ?? ""}
+                  options={userOptions}
+                  onChange={(value) => setUserId(value || null)}
                 />
+              ) : null}
+              <FormField
+                label={strings.history.municipalityLabel}
+                placeholder={strings.history.municipalityPlaceholder}
+                value={municipality}
+                onChangeText={setMunicipality}
+              />
+              <FormField
+                label={strings.history.nameLabel}
+                placeholder={strings.history.namePlaceholder}
+                value={nameQuery}
+                onChangeText={setNameQuery}
+              />
+              <View className="flex-row gap-3">
+                <View className="flex-1">
+                  <FormField
+                    label={strings.history.fromLabel}
+                    placeholder={strings.history.datePlaceholder}
+                    autoCapitalize="none"
+                    value={dateFrom}
+                    onChangeText={setDateFrom}
+                  />
+                </View>
+                <View className="flex-1">
+                  <FormField
+                    label={strings.history.toLabel}
+                    placeholder={strings.history.datePlaceholder}
+                    autoCapitalize="none"
+                    value={dateTo}
+                    onChangeText={setDateTo}
+                  />
+                </View>
               </View>
-              <View className="flex-1">
-                <FormField
-                  label={strings.history.toLabel}
-                  placeholder={strings.history.datePlaceholder}
-                  autoCapitalize="none"
-                  value={dateTo}
-                  onChangeText={setDateTo}
-                />
-              </View>
-            </View>
-            <PrimaryButton label={strings.history.applyFilters} onPress={loadHistory} loading={isLoading} />
-          </Card>
+              <PrimaryButton
+                label={strings.history.applyFilter}
+                onPress={applyFilter}
+                loading={isLoading}
+              />
+            </Card>
+          ) : null
         }
         renderItem={({ item }) => <FixingDetailCard fixing={item} />}
         ListEmptyComponent={

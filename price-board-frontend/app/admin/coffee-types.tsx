@@ -5,12 +5,13 @@ import { Card } from "../../src/components/Card";
 import { Badge } from "../../src/components/Badge";
 import { StateView } from "../../src/components/StateView";
 import { FormField } from "../../src/components/FormField";
+import { CurrencyInput } from "../../src/components/CurrencyInput";
 import { PrimaryButton } from "../../src/components/PrimaryButton";
 import { useAsync } from "../../src/hooks/useAsync";
 import { CoffeeTypesApi } from "../../src/api/coffeeTypesApi";
 import { getApiErrorMessage } from "../../src/api/apiError";
 import { CoffeeType } from "../../src/types/coffeeType.types";
-import { formatCurrency } from "../../src/utils/format";
+import { formatCurrency, parseThousands } from "../../src/utils/format";
 import { strings } from "../../src/constants/strings";
 
 /**
@@ -38,7 +39,7 @@ export default function CoffeeTypesScreen() {
     setRowError(null);
     setCreating(true);
     try {
-      const parsedPrice = newPrice.trim() ? Number(newPrice.replace(",", ".")) : undefined;
+      const parsedPrice = parseThousands(newPrice);
       await CoffeeTypesApi.create({
         name: newName.trim(),
         currentPrice: Number.isFinite(parsedPrice) ? parsedPrice : undefined,
@@ -67,9 +68,8 @@ export default function CoffeeTypesScreen() {
   }
 
   async function savePrice(type: CoffeeType) {
-    const draft = priceDrafts[type.id];
-    const parsed = Number((draft ?? "").replace(",", "."));
-    if (!draft || !Number.isFinite(parsed) || parsed < 0) {
+    const parsed = parseThousands(priceDrafts[type.id] ?? "");
+    if (!Number.isFinite(parsed) || parsed < 0) {
       setRowError(strings.adminCoffeeTypes.invalidPrice);
       return;
     }
@@ -112,12 +112,11 @@ export default function CoffeeTypesScreen() {
               value={newName}
               onChangeText={setNewName}
             />
-            <FormField
+            <CurrencyInput
               label={strings.adminCoffeeTypes.initialPriceLabel}
               placeholder={strings.adminCoffeeTypes.initialPricePlaceholder}
-              keyboardType="numeric"
               value={newPrice}
-              onChangeText={setNewPrice}
+              onChangeValue={setNewPrice}
             />
             <PrimaryButton
               label={strings.adminCoffeeTypes.createButton}
@@ -126,64 +125,60 @@ export default function CoffeeTypesScreen() {
             />
           </Card>
         }
-        renderItem={({ item }) => {
-          const draft = priceDrafts[item.id] ?? "";
-          return (
-            <Card>
-              <View className="flex-row items-center justify-between">
-                <Text className="flex-1 pr-2 text-base font-semibold text-primary dark:text-white">
-                  {item.name}
-                </Text>
-                <Badge
-                  label={
-                    item.active
-                      ? strings.adminCoffeeTypes.statusActive
-                      : strings.adminCoffeeTypes.statusInactive
+        renderItem={({ item }) => (
+          <Card>
+            <View className="flex-row items-center justify-between">
+              <Text className="flex-1 pr-2 text-base font-semibold text-primary dark:text-white">
+                {item.name}
+              </Text>
+              <Badge
+                label={
+                  item.active
+                    ? strings.adminCoffeeTypes.statusActive
+                    : strings.adminCoffeeTypes.statusInactive
+                }
+                tone={item.active ? "accent" : "muted"}
+              />
+            </View>
+            <Text className="mt-1 text-sm text-muted dark:text-muted-dark">
+              {strings.adminCoffeeTypes.currentPrice(formatCurrency(item.currentPrice))}
+            </Text>
+
+            <View className="mt-3 flex-row items-end gap-2">
+              <View className="flex-1">
+                <CurrencyInput
+                  label={strings.adminCoffeeTypes.newPriceLabel}
+                  placeholder={strings.adminCoffeeTypes.newPricePlaceholder}
+                  value={priceDrafts[item.id] ?? ""}
+                  onChangeValue={(digits) =>
+                    setPriceDrafts((prev) => ({ ...prev, [item.id]: digits }))
                   }
-                  tone={item.active ? "accent" : "muted"}
                 />
               </View>
-              <Text className="mt-1 text-sm text-muted dark:text-muted-dark">
-                {strings.adminCoffeeTypes.currentPrice(formatCurrency(item.currentPrice))}
-              </Text>
-
-              <View className="mt-3 flex-row items-end gap-2">
-                <View className="flex-1">
-                  <FormField
-                    label={strings.adminCoffeeTypes.newPriceLabel}
-                    placeholder={strings.adminCoffeeTypes.newPricePlaceholder}
-                    keyboardType="numeric"
-                    value={draft}
-                    onChangeText={(text) =>
-                      setPriceDrafts((prev) => ({ ...prev, [item.id]: text }))
-                    }
-                  />
-                </View>
-                <Pressable
-                  onPress={() => savePrice(item)}
-                  disabled={busyId === item.id}
-                  className="mb-5 items-center rounded-xl bg-primary px-4 py-3 dark:bg-primary-dark"
-                >
-                  <Text className="text-sm font-semibold text-white">
-                    {strings.adminCoffeeTypes.save}
-                  </Text>
-                </Pressable>
-              </View>
-
               <Pressable
-                onPress={() => toggleActive(item)}
+                onPress={() => savePrice(item)}
                 disabled={busyId === item.id}
-                className="items-center rounded-xl border border-border py-2.5 dark:border-border-dark"
+                className="mb-5 items-center rounded-xl bg-primary px-4 py-3 hover:opacity-90 active:opacity-80 dark:bg-primary-dark"
               >
-                <Text className="text-sm font-semibold text-primary dark:text-white">
-                  {item.active
-                    ? strings.adminCoffeeTypes.deactivate
-                    : strings.adminCoffeeTypes.activate}
+                <Text className="text-sm font-semibold text-white">
+                  {strings.adminCoffeeTypes.save}
                 </Text>
               </Pressable>
-            </Card>
-          );
-        }}
+            </View>
+
+            <Pressable
+              onPress={() => toggleActive(item)}
+              disabled={busyId === item.id}
+              className="items-center rounded-xl border border-border py-2.5 hover:opacity-90 active:opacity-80 dark:border-border-dark"
+            >
+              <Text className="text-sm font-semibold text-primary dark:text-white">
+                {item.active
+                  ? strings.adminCoffeeTypes.deactivate
+                  : strings.adminCoffeeTypes.activate}
+              </Text>
+            </Pressable>
+          </Card>
+        )}
         ListEmptyComponent={
           <StateView
             isLoading={isLoading}

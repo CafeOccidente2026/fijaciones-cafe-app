@@ -7,9 +7,23 @@ import { strings } from "../constants/strings";
 
 /** e.g. 12500 -> "$ 12.500" (dot as thousands separator, no decimals). */
 export function formatCurrency(value: number): string {
-  const rounded = Math.round(value);
-  const grouped = rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return `$ ${grouped}`;
+  return `$ ${formatThousands(String(Math.round(value)))}`;
+}
+
+/**
+ * Groups a raw digit string with dots as thousands separators, live as
+ * the user types. "2500000" -> "2.500.000". Non-digits are dropped.
+ */
+export function formatThousands(rawDigits: string): string {
+  const digits = rawDigits.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+  if (digits === "") return "";
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/** Inverse of formatThousands. "2.500.000" -> 2500000. "" -> NaN. */
+export function parseThousands(formatted: string): number {
+  const digits = formatted.replace(/\D/g, "");
+  return digits === "" ? NaN : Number(digits);
 }
 
 /** e.g. 27 -> "27 kg" */

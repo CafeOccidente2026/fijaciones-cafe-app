@@ -34,6 +34,19 @@ export default function SendNotificationScreen() {
     return Array.from(selectedIds);
   }, [toAll, producers, selectedIds]);
 
+  // The two modes are mutually exclusive: picking "a todos" drops any
+  // specific selection so the two can never be combined.
+  function chooseAll() {
+    setToAll(true);
+    setSelectedIds(new Set());
+    setSuccessMessage(null);
+  }
+
+  function chooseSpecific() {
+    setToAll(false);
+    setSuccessMessage(null);
+  }
+
   function toggle(id: string) {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -87,33 +100,41 @@ export default function SendNotificationScreen() {
 
       <Card>
         <Pressable
-          onPress={() => setToAll(true)}
-          className={`mb-2 flex-row items-center gap-3 rounded-xl border p-3 ${
+          onPress={chooseAll}
+          accessibilityRole="radio"
+          accessibilityState={{ checked: toAll }}
+          className={`mb-2 flex-row items-center gap-3 rounded-xl border p-3 hover:opacity-90 active:opacity-80 ${
             toAll
               ? "border-accent bg-accent-soft dark:border-accent-dark dark:bg-accent-soft-dark"
               : "border-border dark:border-border-dark"
           }`}
         >
           <View
-            className={`h-4 w-4 rounded-full border ${
-              toAll ? "border-accent bg-accent dark:border-accent-dark dark:bg-accent-dark" : "border-muted"
+            className={`h-4 w-4 items-center justify-center rounded-full border ${
+              toAll ? "border-accent dark:border-accent-dark" : "border-muted"
             }`}
-          />
+          >
+            {toAll ? <View className="h-2 w-2 rounded-full bg-accent dark:bg-accent-dark" /> : null}
+          </View>
           <Text className="text-base text-primary dark:text-white">{strings.sendNotification.toAll}</Text>
         </Pressable>
         <Pressable
-          onPress={() => setToAll(false)}
-          className={`flex-row items-center gap-3 rounded-xl border p-3 ${
+          onPress={chooseSpecific}
+          accessibilityRole="radio"
+          accessibilityState={{ checked: !toAll }}
+          className={`flex-row items-center gap-3 rounded-xl border p-3 hover:opacity-90 active:opacity-80 ${
             !toAll
               ? "border-accent bg-accent-soft dark:border-accent-dark dark:bg-accent-soft-dark"
               : "border-border dark:border-border-dark"
           }`}
         >
           <View
-            className={`h-4 w-4 rounded-full border ${
-              !toAll ? "border-accent bg-accent dark:border-accent-dark dark:bg-accent-dark" : "border-muted"
+            className={`h-4 w-4 items-center justify-center rounded-full border ${
+              !toAll ? "border-accent dark:border-accent-dark" : "border-muted"
             }`}
-          />
+          >
+            {!toAll ? <View className="h-2 w-2 rounded-full bg-accent dark:bg-accent-dark" /> : null}
+          </View>
           <Text className="text-base text-primary dark:text-white">
             {strings.sendNotification.toSpecific}
           </Text>
@@ -135,7 +156,7 @@ export default function SendNotificationScreen() {
                 <Pressable
                   key={producer.id}
                   onPress={() => toggle(producer.id)}
-                  className="flex-row items-center gap-3 border-b border-border py-3 dark:border-border-dark"
+                  className="flex-row items-center gap-3 border-b border-border py-3 hover:opacity-90 active:opacity-70 dark:border-border-dark"
                 >
                   <View
                     className={`h-5 w-5 items-center justify-center rounded border ${

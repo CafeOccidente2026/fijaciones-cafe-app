@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../src/auth/AuthContext";
 import { FormField } from "../src/components/FormField";
 import { PrimaryButton } from "../src/components/PrimaryButton";
 import { strings } from "../src/constants/strings";
+
+const logo = require("../assets/images/cafeoccidente.webp");
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -41,8 +43,8 @@ export default function LoginScreen() {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
         <View className="mx-5 rounded-3xl border border-border bg-card p-6 dark:border-border-dark dark:bg-card-dark">
-          <View className="mb-4 h-20 w-20 self-center items-center justify-center rounded-full bg-accent-soft dark:bg-accent-soft-dark">
-            <Text className="text-2xl">☕</Text>
+          <View className="mb-4 h-20 w-20 self-center items-center justify-center overflow-hidden rounded-full bg-accent-soft dark:bg-accent-soft-dark">
+            <Image source={logo} resizeMode="contain" className="h-16 w-16" />
           </View>
 
           <Text className="text-center text-2xl font-bold text-primary dark:text-white">

@@ -4,13 +4,13 @@ import { Screen } from "../../src/components/Screen";
 import { Card } from "../../src/components/Card";
 import { StateView } from "../../src/components/StateView";
 import { Select } from "../../src/components/Select";
-import { FormField } from "../../src/components/FormField";
+import { CurrencyInput } from "../../src/components/CurrencyInput";
 import { PrimaryButton } from "../../src/components/PrimaryButton";
 import { useAsync } from "../../src/hooks/useAsync";
 import { CoffeeTypesApi } from "../../src/api/coffeeTypesApi";
 import { getApiErrorMessage } from "../../src/api/apiError";
 import { CoffeeType } from "../../src/types/coffeeType.types";
-import { formatCurrency } from "../../src/utils/format";
+import { formatCurrency, parseThousands } from "../../src/utils/format";
 import { strings } from "../../src/constants/strings";
 
 /**
@@ -35,7 +35,7 @@ export default function UpdatePriceScreen() {
 
   async function submit() {
     setSuccessMessage(null);
-    const parsed = Number(price.replace(",", "."));
+    const parsed = parseThousands(price);
     if (!selectedType) {
       setFormError(strings.updatePrice.selectCoffeeType);
       return;
@@ -89,13 +89,12 @@ export default function UpdatePriceScreen() {
             </Text>
           ) : null}
 
-          <FormField
+          <CurrencyInput
             label={strings.updatePrice.newPriceLabel}
             placeholder={strings.updatePrice.newPricePlaceholder}
-            keyboardType="numeric"
             value={price}
-            onChangeText={(text) => {
-              setPrice(text);
+            onChangeValue={(digits) => {
+              setPrice(digits);
               setSuccessMessage(null);
             }}
           />

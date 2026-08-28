@@ -5,6 +5,8 @@ import { strings } from "../constants/strings";
 export interface SelectOption {
   label: string;
   value: string;
+  /** Shows a small red dot next to this option (e.g. "unseen update"). */
+  indicator?: boolean;
 }
 
 interface SelectProps {
@@ -41,8 +43,8 @@ export function Select({
 
       <Pressable
         onPress={() => !disabled && setOpen(true)}
-        className={`flex-row items-center justify-between rounded-xl border border-border bg-background px-4 py-3 dark:border-border-dark dark:bg-background-dark ${
-          disabled ? "opacity-50" : ""
+        className={`flex-row items-center justify-between rounded-xl border border-border bg-background px-4 py-3 hover:border-accent dark:border-border-dark dark:bg-background-dark dark:hover:border-accent-dark ${
+          disabled ? "opacity-50" : "active:opacity-80"
         }`}
       >
         <Text
@@ -74,8 +76,13 @@ export function Select({
                       onChange(item.value);
                       setOpen(false);
                     }}
-                    className={`px-4 py-3 ${isSelected ? "bg-accent-soft dark:bg-accent-soft-dark" : ""}`}
+                    className={`flex-row items-center gap-2 px-4 py-3 hover:opacity-90 active:opacity-70 ${
+                      isSelected ? "bg-accent-soft dark:bg-accent-soft-dark" : ""
+                    }`}
                   >
+                    {item.indicator ? (
+                      <View className="h-2 w-2 rounded-full bg-danger dark:bg-danger-dark" />
+                    ) : null}
                     <Text
                       className={`text-base ${
                         isSelected

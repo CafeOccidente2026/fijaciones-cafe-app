@@ -70,7 +70,7 @@ export default function UsersScreen() {
         <View className="flex-row items-center gap-3">
           <Pressable
             onPress={() => router.push("/admin/create-user")}
-            className="rounded-xl bg-primary px-4 py-2 dark:bg-primary-dark"
+            className="rounded-xl bg-primary px-4 py-2 hover:opacity-90 active:opacity-80 dark:bg-primary-dark"
           >
             <Text className="text-sm font-semibold text-white">{strings.adminUsers.createButton}</Text>
           </Pressable>
@@ -123,7 +123,7 @@ export default function UsersScreen() {
                 <Pressable
                   onPress={() => toggleStatus(item)}
                   disabled={busyId === item.id}
-                  className="flex-1 items-center rounded-xl border border-border py-2.5 dark:border-border-dark"
+                  className="flex-1 items-center rounded-xl border border-border py-2.5 hover:opacity-90 active:opacity-70 dark:border-border-dark"
                 >
                   <Text className="text-sm font-semibold text-primary dark:text-white">
                     {item.status === "ACTIVE" ? strings.adminUsers.suspend : strings.adminUsers.activate}
@@ -132,7 +132,7 @@ export default function UsersScreen() {
                 <Pressable
                   onPress={() => setUserToDelete(item)}
                   disabled={busyId === item.id}
-                  className="flex-1 items-center rounded-xl border border-danger py-2.5 dark:border-danger-dark"
+                  className="flex-1 items-center rounded-xl border border-danger py-2.5 hover:opacity-90 active:opacity-70 dark:border-danger-dark"
                 >
                   <Text className="text-sm font-semibold text-danger dark:text-danger-dark">
                     {strings.adminUsers.delete}
