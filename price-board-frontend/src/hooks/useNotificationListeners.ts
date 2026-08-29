@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
 import { useAuth } from "../auth/AuthContext";
 import { isRunningInExpoGo } from "../notifications/pushRegistration";
+import { notifyUnreadNotificationsChanged } from "../notifications/unreadNotificationsBus";
 
 // Show incoming notifications while the app is in the foreground too, not
 // just in the system tray. Skipped in Expo Go and guarded with try/catch:
@@ -52,10 +53,12 @@ export function useNotificationListeners(): void {
         }
       });
 
-      // Received-while-foregrounded notifications are handled by the
-      // handler above (banner); no extra action needed here besides
-      // keeping this listener registered for future use (e.g. badges).
-      const receivedSub = Notifications.addNotificationReceivedListener(() => {});
+      // Received-while-foregrounded notifications are shown by the
+      // handler above (banner); here we just tell every mounted unread
+      // badge to refetch, since a new one just arrived.
+      const receivedSub = Notifications.addNotificationReceivedListener(() => {
+        notifyUnreadNotificationsChanged();
+      });
 
       return () => {
         responseSub.remove();

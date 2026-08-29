@@ -5,6 +5,7 @@ import { NotificationItem } from "./NotificationItem";
 import { useAsync } from "../hooks/useAsync";
 import { NotificationsApi } from "../api/notificationsApi";
 import { AppNotification } from "../types/notification.types";
+import { notifyUnreadNotificationsChanged } from "../notifications/unreadNotificationsBus";
 import { strings } from "../constants/strings";
 
 /**
@@ -25,6 +26,7 @@ export function NotificationsInboxList() {
     setReadIds((prev) => new Set(prev).add(notification.notificationRecipientId));
     try {
       await NotificationsApi.markRead(notification.notificationRecipientId);
+      notifyUnreadNotificationsChanged();
     } catch {
       // Best-effort: if it fails the dot reappears on the next reload.
       setReadIds((prev) => {

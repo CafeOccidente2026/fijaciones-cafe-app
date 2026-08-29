@@ -1,7 +1,9 @@
 import React from "react";
+import { View } from "react-native";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../theme/useThemeColors";
+import { UnreadBadge } from "./UnreadBadge";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -10,6 +12,8 @@ export interface RoleTab {
   name: string;
   title: string;
   icon: IoniconName;
+  /** When set, mounts an UnreadBadge with this count on the tab's icon. */
+  badgeCount?: number;
 }
 
 /**
@@ -39,7 +43,12 @@ export function RoleTabs({ tabs, hidden = [] }: { tabs: RoleTab[]; hidden?: stri
           name={tab.name}
           options={{
             title: tab.title,
-            tabBarIcon: ({ color, size }) => <Ionicons name={tab.icon} color={color} size={size} />,
+            tabBarIcon: ({ color, size }) => (
+              <View className="relative">
+                <Ionicons name={tab.icon} color={color} size={size} />
+                {tab.badgeCount !== undefined ? <UnreadBadge count={tab.badgeCount} /> : null}
+              </View>
+            ),
           }}
         />
       ))}

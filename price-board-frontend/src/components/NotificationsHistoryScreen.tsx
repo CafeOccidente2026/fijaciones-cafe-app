@@ -5,6 +5,7 @@ import { StateView } from "./StateView";
 import { SentNotificationItem } from "./SentNotificationItem";
 import { NotificationsInboxList } from "./NotificationsInboxList";
 import { useAsync } from "../hooks/useAsync";
+import { useUnreadNotificationsCount } from "../hooks/useUnreadNotificationsCount";
 import { NotificationsApi } from "../api/notificationsApi";
 import { SentNotification } from "../types/notification.types";
 import { strings } from "../constants/strings";
@@ -19,13 +20,14 @@ type Tab = "sent" | "received";
 export function NotificationsHistoryScreen() {
   const [tab, setTab] = useState<Tab>("sent");
   const sent = useAsync<SentNotification[]>(() => NotificationsApi.sentByMe());
+  const unreadCount = useUnreadNotificationsCount();
 
   return (
     <Screen title={strings.notificationsHistory.title} scroll={false}>
       <SegmentedControl
         options={[
           { key: "sent" as const, label: strings.notificationsHistory.sentTab },
-          { key: "received" as const, label: strings.notificationsHistory.receivedTab },
+          { key: "received" as const, label: strings.notificationsHistory.receivedTab, count: unreadCount },
         ]}
         value={tab}
         onChange={setTab}
@@ -59,7 +61,7 @@ function SegmentedControl<T extends string>({
   value,
   onChange,
 }: {
-  options: { key: T; label: string }[];
+  options: { key: T; label: string; count?: number }[];
   value: T;
   onChange: (value: T) => void;
 }) {
@@ -85,6 +87,9 @@ function SegmentedControl<T extends string>({
               }`}
             >
               {option.label}
+              {option.count ? (
+                <Text className="text-danger dark:text-danger-dark"> ({option.count})</Text>
+              ) : null}
             </Text>
           </Pressable>
         );

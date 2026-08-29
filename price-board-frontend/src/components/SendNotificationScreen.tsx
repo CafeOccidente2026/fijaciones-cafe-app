@@ -7,7 +7,9 @@ import { Card } from "./Card";
 import { Badge } from "./Badge";
 import { StateView } from "./StateView";
 import { PrimaryButton } from "./PrimaryButton";
+import { UnreadBadge } from "./UnreadBadge";
 import { useAsync } from "../hooks/useAsync";
+import { useUnreadNotificationsCount } from "../hooks/useUnreadNotificationsCount";
 import { useThemeColors } from "../theme/useThemeColors";
 import { useAuth } from "../auth/AuthContext";
 import { UsersApi } from "../api/usersApi";
@@ -31,6 +33,7 @@ export function SendNotificationScreen() {
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
   const historyRoute = isAdmin ? "/admin/notifications-history" : "/price-manager/notifications-history";
+  const unreadCount = useUnreadNotificationsCount();
 
   const { data: candidates, isLoading, error, reload } = useAsync<AppUser[]>(
     () => (isAdmin ? UsersApi.list() : UsersApi.list("PRODUCER")),
@@ -105,9 +108,10 @@ export function SendNotificationScreen() {
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel={strings.sendNotification.historyButtonLabel}
-          className="rounded-lg p-1 hover:opacity-80 active:opacity-60"
+          className="relative rounded-lg p-1 hover:opacity-80 active:opacity-60"
         >
           <Ionicons name="time-outline" size={24} color={colors.primary} />
+          <UnreadBadge count={unreadCount} />
         </Pressable>
       }
     >
