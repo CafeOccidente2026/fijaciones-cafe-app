@@ -47,6 +47,15 @@ export class UsersRepository {
     });
   }
 
+  /** Used to build push-notification audiences - active users only. */
+  static async findActiveIdsByRole(role: Role): Promise<string[]> {
+    const users = await prisma.user.findMany({
+      where: { role, status: UserStatus.ACTIVE },
+      select: { id: true },
+    });
+    return users.map((user) => user.id);
+  }
+
   static updateStatus(id: string, status: UserStatus) {
     return prisma.user.update({ where: { id }, data: { status }, select: publicUserSelect });
   }

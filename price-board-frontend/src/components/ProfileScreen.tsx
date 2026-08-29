@@ -162,9 +162,18 @@ export function ProfileScreen() {
             </Card>
 
             <Pressable
+              onPress={() => router.push("/change-password")}
+              className="items-center rounded-2xl border border-border bg-card/90 py-4 dark:border-border-dark dark:bg-card-dark/90"
+            >
+              <Text className="text-base font-semibold text-primary dark:text-white">
+                {strings.profile.changePassword}
+              </Text>
+            </Pressable>
+
+            <Pressable
               onPress={handleLogout}
               disabled={loggingOut}
-              className="mt-2 items-center rounded-2xl border border-danger py-4 dark:border-danger-dark"
+              className="mt-2 items-center rounded-2xl border border-danger bg-card/90 py-4 dark:border-danger-dark dark:bg-card-dark/90"
             >
               <Text className="text-base font-semibold text-danger dark:text-danger-dark">
                 {loggingOut ? strings.profile.loggingOut : strings.profile.logout}

@@ -1,0 +1,49 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (reales, nunca se suben)
+.env
+.env.*
+!.env.example
+
+# Backend: build y uploads
+price-board-backend/dist/
+price-board-backend/uploads/profile-photos/*
+!price-board-backend/uploads/profile-photos/.gitkeep
+
+# Frontend: Expo / Metro / nativo
+price-board-frontend/.expo/
+price-board-frontend/dist/
+price-board-frontend/web-build/
+price-board-frontend/expo-env.d.ts
+price-board-frontend/.kotlin/
+price-board-frontend/*.orig.*
+price-board-frontend/*.jks
+price-board-frontend/*.p8
+price-board-frontend/*.p12
+price-board-frontend/*.key
+price-board-frontend/*.mobileprovision
+price-board-frontend/.metro-health-check*
+price-board-frontend/npm-debug.*
+price-board-frontend/yarn-debug.*
+price-board-frontend/yarn-error.*
+price-board-frontend/.env*.local
+price-board-frontend/*.tsbuildinfo
+price-board-frontend/ios/
+price-board-frontend/android/
+
+# Herramientas locales / IDE (no se versionan)
+.claude/
+.claudeignore
+CLAUDE.md
+.vscode/
+.idea/
+graphify-out/
+graph.json
+*.class
+target/
+
+# Sistema
+.DS_Store
+*.pem
+*.log

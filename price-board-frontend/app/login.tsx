@@ -5,8 +5,7 @@ import { useAuth } from "../src/auth/AuthContext";
 import { FormField } from "../src/components/FormField";
 import { PrimaryButton } from "../src/components/PrimaryButton";
 import { strings } from "../src/constants/strings";
-
-const logo = require("../assets/images/cafeoccidente.webp");
+import { images } from "../src/constants/images";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -38,13 +37,16 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-background dark:bg-background-dark"
+      className="flex-1"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}>
         <View className="mx-5 rounded-3xl border border-border bg-card p-6 dark:border-border-dark dark:bg-card-dark">
-          <View className="mb-4 h-20 w-20 self-center items-center justify-center overflow-hidden rounded-full bg-accent-soft dark:bg-accent-soft-dark">
-            <Image source={logo} resizeMode="contain" className="h-16 w-16" />
+          {/* The new logo is transparent, so the circle keeps a fixed light
+              backdrop here regardless of theme - an intentional exception,
+              not a change to the app's general background. */}
+          <View className="mb-4 h-24 w-24 self-center items-center justify-center overflow-hidden rounded-full bg-white">
+            <Image source={images.logo} resizeMode="contain" className="h-20 w-20" />
           </View>
 
           <Text className="text-center text-2xl font-bold text-primary dark:text-white">

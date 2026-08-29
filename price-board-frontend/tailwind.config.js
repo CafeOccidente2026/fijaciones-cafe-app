@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 
-// Palette: CaféOccidente green background (#8DAC27 family) + red wine +
-// wood cards + silver/copper metal accents.
+// Palette: warm wood background + red wine + wood cards + silver/copper
+// metal accents.
 // Every semantic token has a "-dark" sibling; components pair them as
 // `bg-card dark:bg-card-dark`. NativeWind toggles the `dark` class from
 // the theme preference (see src/theme/ThemeContext.tsx).
@@ -13,8 +13,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#EEF2DF",
-        "background-dark": "#1B2410",
+        background: "#EFE3D0",
+        "background-dark": "#241B14",
 
         card: "#FBF6EC",
         "card-dark": "#332619",

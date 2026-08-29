@@ -1,5 +1,6 @@
 import { Prisma, Role, UserStatus } from "@prisma/client";
 import { UsersRepository } from "./users.repository";
+import { DeviceTokenRepository } from "./deviceToken.repository";
 import { AuthRepository } from "../auth/auth.repository";
 import { PasswordUtil } from "../../utils/password.util";
 import { AppError } from "../../utils/apiResponse.util";
@@ -77,5 +78,13 @@ export class UsersService {
 
   static updateMyProfilePhoto(userId: string, profilePhotoUrl: string) {
     return UsersRepository.updateProfilePhoto(userId, profilePhotoUrl);
+  }
+
+  static registerDeviceToken(userId: string, token: string) {
+    return DeviceTokenRepository.upsertForUser(userId, token);
+  }
+
+  static async removeDeviceToken(token: string): Promise<void> {
+    await DeviceTokenRepository.deleteByToken(token);
   }
 }

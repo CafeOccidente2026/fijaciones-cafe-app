@@ -13,6 +13,13 @@
           "photosPermission": "La app necesita acceso a tus fotos para elegir una imagen de perfil.",
           "cameraPermission": "La app necesita acceso a la cámara para tomar tu foto de perfil."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/android-icon-monochrome.png",
+          "color": "#6E1423"
+        }
       ]
     ],
     "icon": "./assets/icon.png",

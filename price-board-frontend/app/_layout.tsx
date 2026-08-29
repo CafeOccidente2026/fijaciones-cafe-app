@@ -3,11 +3,13 @@ import React, { useCallback, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { View, Modal, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Modal, Text, Pressable } from "react-native";
 import { AuthProvider } from "../src/auth/AuthContext";
 import { useInactivityLogout } from "../src/auth/useInactivityLogout";
+import { useNotificationListeners } from "../src/hooks/useNotificationListeners";
 import { ThemeProvider, useTheme } from "../src/theme/ThemeContext";
-import { useThemeColors } from "../src/theme/useThemeColors";
+import { ScreenBackground } from "../src/components/ScreenBackground";
+import { LoadingScreen } from "../src/components/LoadingScreen";
 import { strings } from "../src/constants/strings";
 
 /**
@@ -24,6 +26,7 @@ function InactivityGate({ children }: { children: React.ReactNode }) {
   }, []);
 
   const { resetTimer } = useInactivityLogout(handleTimeout);
+  useNotificationListeners();
 
   function acknowledgeAndGoToLogin() {
     setShowTimeoutModal(false);
@@ -59,25 +62,24 @@ function InactivityGate({ children }: { children: React.ReactNode }) {
 /** Holds rendering until the saved theme preference has been read. */
 function ThemedApp() {
   const { isReady, resolvedTheme } = useTheme();
-  const colors = useThemeColors();
 
   if (!isReady) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <ScreenBackground>
+        <LoadingScreen />
+      </ScreenBackground>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScreenBackground>
       <StatusBar style={resolvedTheme === "dark" ? "light" : "dark"} />
       <AuthProvider>
         <InactivityGate>
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "transparent" } }} />
         </InactivityGate>
       </AuthProvider>
-    </View>
+    </ScreenBackground>
   );
 }
 

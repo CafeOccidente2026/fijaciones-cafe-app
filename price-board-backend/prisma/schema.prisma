@@ -44,6 +44,7 @@ model User {
   receivedNotifications  NotificationRecipient[]
   createdByAdmin         String?
   priceChanges           PriceHistory[]
+  deviceTokens           DeviceToken[]
 
   @@map("users")
 }
@@ -115,6 +116,19 @@ model Notification {
   recipients NotificationRecipient[]
 
   @@map("notifications")
+}
+
+/// Un token de push de Expo por dispositivo, para enviar notificaciones
+/// remotas aunque la app este cerrada o en segundo plano.
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("device_tokens")
 }
 
 /// Tabla puente: permite notificaciones dirigidas a un usuario o broadcast a varios

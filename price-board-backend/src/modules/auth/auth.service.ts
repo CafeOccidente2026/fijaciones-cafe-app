@@ -125,4 +125,46 @@ export class AuthService {
       // Token already invalid/expired: logout is still considered successful.
     }
   }
+
+  /**
+   * Changes the current user's password. Every other refresh token for the
+   * account is revoked (so a leaked/old device is logged out), but the
+   * caller's own session is kept alive by issuing a fresh access+refresh
+   * pair, just like login does.
+   */
+  static async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const user = await AuthRepository.findUserById(userId);
+
+    if (!user) {
+      throw new AppError("Usuario no encontrado", 401);
+    }
+
+    const currentMatches = await PasswordUtil.compare(currentPassword, user.passwordHash);
+
+    if (!currentMatches) {
+      throw new AppError("La contrasena actual no es correcta", 401);
+    }
+
+    const newPasswordHash = await PasswordUtil.hash(newPassword);
+    await AuthRepository.updatePasswordHash(user.id, newPasswordHash);
+    await AuthRepository.revokeAllTokensForUser(user.id);
+
+    const accessToken = TokenUtil.generateAccessToken({ userId: user.id, role: user.role });
+    const refreshTokenId = randomUUID();
+    const refreshToken = TokenUtil.generateRefreshToken({ userId: user.id, tokenId: refreshTokenId });
+    const expiresAt = new Date(Date.now() + parseDurationToMs(env.JWT_REFRESH_EXPIRES_IN));
+
+    await AuthRepository.storeRefreshToken({
+      id: refreshTokenId,
+      userId: user.id,
+      token: refreshToken,
+      expiresAt,
+    });
+
+    return { accessToken, refreshToken };
+  }
 }

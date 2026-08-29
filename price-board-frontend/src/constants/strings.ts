@@ -127,6 +127,22 @@ export const strings = {
     themeLight: "Claro",
     themeDark: "Oscuro",
     themeSystem: "Sistema",
+    changePassword: "Cambiar contraseña",
+  },
+
+  changePassword: {
+    title: "Cambiar contraseña",
+    currentPasswordLabel: "Contraseña actual",
+    currentPasswordPlaceholder: "••••••••",
+    newPasswordLabel: "Nueva contraseña",
+    newPasswordPlaceholder: "Mínimo 8 caracteres",
+    confirmPasswordLabel: "Repetir nueva contraseña",
+    confirmPasswordPlaceholder: "••••••••",
+    missingFields: "Completa los 3 campos",
+    tooShort: "La nueva contraseña debe tener al menos 8 caracteres",
+    passwordsDontMatch: "Las contraseñas nuevas no coinciden",
+    success: "Tu contraseña se actualizó correctamente",
+    saveButton: "Guardar contraseña",
   },
 
   priceManagerToday: {

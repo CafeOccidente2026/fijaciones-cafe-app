@@ -31,7 +31,7 @@ export function Screen({
   const router = useRouter();
 
   const header = title ? (
-    <View className="px-5 pb-2 pt-4">
+    <View className="mx-4 mt-3 rounded-2xl bg-card/90 px-4 py-3 dark:bg-card-dark/90">
       {showBack ? (
         <Pressable onPress={() => router.back()} className="mb-1 self-start py-1">
           <Text className="text-sm font-semibold text-primary-light dark:text-accent">
@@ -52,7 +52,7 @@ export function Screen({
   ) : null;
 
   return (
-    <SafeAreaView className="flex-1 bg-background dark:bg-background-dark" edges={["top"]}>
+    <SafeAreaView className="flex-1" edges={["top"]}>
       {header}
       {scroll ? (
         <ScrollView

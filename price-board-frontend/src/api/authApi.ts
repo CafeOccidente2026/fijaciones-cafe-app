@@ -1,5 +1,5 @@
 import { httpClient } from "./httpClient";
-import { LoginResponse } from "../types/auth.types";
+import { ChangePasswordResponse, LoginResponse } from "../types/auth.types";
 
 /**
  * Single responsibility: talk to /api/auth/*. Returns plain data,
@@ -13,5 +13,16 @@ export class AuthApi {
 
   static async logout(refreshToken: string): Promise<void> {
     await httpClient.post("/auth/logout", { refreshToken });
+  }
+
+  static async changePassword(
+    currentPassword: string,
+    newPassword: string
+  ): Promise<ChangePasswordResponse> {
+    const { data } = await httpClient.patch("/auth/change-password", {
+      currentPassword,
+      newPassword,
+    });
+    return data.data as ChangePasswordResponse;
   }
 }

@@ -20,10 +20,14 @@ router.post(
   uploadProfilePhoto,
   asyncHandler(UsersController.uploadProfilePhotoFile)
 );
+router.post("/me/device-token", asyncHandler(UsersController.registerDeviceToken));
+router.delete("/me/device-token", asyncHandler(UsersController.removeDeviceToken));
 
 // Admin-only account management.
 router.post("/", authorize(Role.ADMIN), asyncHandler(UsersController.create));
-router.get("/", authorize(Role.ADMIN), asyncHandler(UsersController.list));
+// PRICE_MANAGER also needs to list PRODUCER accounts, to pick specific
+// recipients when sending a notification (see notifications.routes.ts).
+router.get("/", authorize(Role.ADMIN, Role.PRICE_MANAGER), asyncHandler(UsersController.list));
 router.patch("/:id/suspend", authorize(Role.ADMIN), asyncHandler(UsersController.suspend));
 router.patch("/:id/activate", authorize(Role.ADMIN), asyncHandler(UsersController.activate));
 router.delete("/:id", authorize(Role.ADMIN), asyncHandler(UsersController.remove));

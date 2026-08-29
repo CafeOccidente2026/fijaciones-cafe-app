@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
-import { loginSchema, refreshSchema } from "./auth.validation";
+import { loginSchema, refreshSchema, changePasswordSchema } from "./auth.validation";
 import { ApiResponse, AppError } from "../../utils/apiResponse.util";
 
 /**
@@ -38,5 +38,20 @@ export class AuthController {
     }
 
     ApiResponse.success(res, { message: "Sesion cerrada" });
+  }
+
+  static async changePassword(req: Request, res: Response): Promise<void> {
+    const parsed = changePasswordSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      throw new AppError(parsed.error.errors[0]?.message ?? "Datos invalidos", 422);
+    }
+
+    const result = await AuthService.changePassword(
+      req.auth!.userId,
+      parsed.data.currentPassword,
+      parsed.data.newPassword
+    );
+    ApiResponse.success(res, result);
   }
 }

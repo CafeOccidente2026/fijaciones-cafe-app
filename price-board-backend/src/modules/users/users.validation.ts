@@ -17,5 +17,10 @@ export const listUsersQuerySchema = z.object({
   role: z.nativeEnum(Role).optional(),
 });
 
+export const registerDeviceTokenSchema = z.object({
+  token: z.string().min(1, "El token es requerido"),
+});
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateProfilePhotoInput = z.infer<typeof updateProfilePhotoSchema>;
+export type RegisterDeviceTokenInput = z.infer<typeof registerDeviceTokenSchema>;

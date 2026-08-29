@@ -26,6 +26,11 @@ export function RoleTabs({ tabs, hidden = [] }: { tabs: RoleTab[]; hidden?: stri
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
+        // The tab navigator paints its own opaque scene background by
+        // default, hiding the wood-texture ScreenBackground mounted at
+        // the root layout. Transparent here lets it show through on
+        // every tab screen of every role (visible and hidden alike).
+        sceneStyle: { backgroundColor: "transparent" },
       }}
     >
       {tabs.map((tab) => (

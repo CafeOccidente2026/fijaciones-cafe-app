@@ -54,7 +54,7 @@ export function Select({
         >
           {selected ? selected.label : placeholder}
         </Text>
-        <Text className="text-muted dark:text-muted-dark">▾</Text>
+        <Text className="ml-2 text-2xl leading-none text-muted dark:text-muted-dark">▾</Text>
       </Pressable>
 
       <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>

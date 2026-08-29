@@ -60,4 +60,12 @@ export class UsersApi {
     });
     return data.data as AppUser;
   }
+
+  static async registerDeviceToken(token: string): Promise<void> {
+    await httpClient.post("/users/me/device-token", { token });
+  }
+
+  static async removeDeviceToken(token: string): Promise<void> {
+    await httpClient.delete("/users/me/device-token", { data: { token } });
+  }
 }

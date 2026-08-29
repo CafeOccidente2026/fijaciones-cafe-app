@@ -1,18 +1,12 @@
 import { Redirect } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
 import { useAuth } from "../src/auth/AuthContext";
-import { useThemeColors } from "../src/theme/useThemeColors";
+import { LoadingScreen } from "../src/components/LoadingScreen";
 
 export default function Index() {
   const { user, isLoading } = useAuth();
-  const colors = useThemeColors();
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background dark:bg-background-dark">
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   if (!user) {

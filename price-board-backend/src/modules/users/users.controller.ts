@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { UsersService } from "./users.service";
-import { createUserSchema, listUsersQuerySchema, updateProfilePhotoSchema } from "./users.validation";
+import {
+  createUserSchema,
+  listUsersQuerySchema,
+  registerDeviceTokenSchema,
+  updateProfilePhotoSchema,
+} from "./users.validation";
 import { ApiResponse, AppError } from "../../utils/apiResponse.util";
 import { env } from "../../config/env";
 
@@ -75,5 +80,25 @@ export class UsersController {
   static async remove(req: Request, res: Response): Promise<void> {
     await UsersService.deleteUser(req.params.id);
     ApiResponse.success(res, { message: "Usuario eliminado" });
+  }
+
+  static async registerDeviceToken(req: Request, res: Response): Promise<void> {
+    const parsed = registerDeviceTokenSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.errors[0]?.message ?? "Datos invalidos", 422);
+    }
+
+    await UsersService.registerDeviceToken(req.auth!.userId, parsed.data.token);
+    ApiResponse.success(res, { message: "Token registrado" });
+  }
+
+  static async removeDeviceToken(req: Request, res: Response): Promise<void> {
+    const parsed = registerDeviceTokenSchema.safeParse(req.body);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.errors[0]?.message ?? "Datos invalidos", 422);
+    }
+
+    await UsersService.removeDeviceToken(parsed.data.token);
+    ApiResponse.success(res, { message: "Token eliminado" });
   }
 }

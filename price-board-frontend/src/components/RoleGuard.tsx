@@ -1,9 +1,8 @@
 import React from "react";
 import { Redirect } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
 import { useAuth } from "../auth/AuthContext";
 import { UserRole } from "../types/auth.types";
-import { useThemeColors } from "../theme/useThemeColors";
+import { LoadingScreen } from "./LoadingScreen";
 
 /**
  * Single responsibility: gate a role's route group. A logged-out user is
@@ -12,14 +11,9 @@ import { useThemeColors } from "../theme/useThemeColors";
  */
 export function RoleGuard({ role, children }: { role: UserRole; children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
-  const colors = useThemeColors();
 
   if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background dark:bg-background-dark">
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
+    return <LoadingScreen />;
   }
 
   if (!user) {

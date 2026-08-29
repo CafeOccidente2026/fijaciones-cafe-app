@@ -1,6 +1,7 @@
 import { NotificationsRepository } from "./notifications.repository";
 import { AppError } from "../../utils/apiResponse.util";
 import { SendNotificationInput } from "./notifications.validation";
+import { PushNotificationService } from "../../services/pushNotification.service";
 
 /**
  * Single responsibility: business rules for sending and reading
@@ -22,6 +23,12 @@ export class NotificationsService {
       input.message,
       recipientIds
     );
+
+    try {
+      await PushNotificationService.sendPushToUsers(recipientIds, "Nueva notificacion", input.message);
+    } catch (error) {
+      console.error("[notifications] push failed:", error);
+    }
 
     return { id: notification.id, recipientCount: notification.recipients.length };
   }

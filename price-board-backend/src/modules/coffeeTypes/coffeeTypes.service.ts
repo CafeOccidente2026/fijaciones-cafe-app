@@ -1,5 +1,7 @@
 import { CoffeeType, Role } from "@prisma/client";
 import { CoffeeTypesRepository } from "./coffeeTypes.repository";
+import { UsersRepository } from "../users/users.repository";
+import { PushNotificationService } from "../../services/pushNotification.service";
 import { AppError } from "../../utils/apiResponse.util";
 import { CreateCoffeeTypeInput } from "./coffeeTypes.validation";
 
@@ -13,6 +15,19 @@ function serialize(coffeeType: CoffeeType) {
     createdAt: coffeeType.createdAt,
     updatedAt: coffeeType.updatedAt,
   };
+}
+
+/**
+ * Every producer plus every price manager, except when the actor making
+ * the change is itself a price manager - in that case they don't get a
+ * push about their own change.
+ */
+async function getPriceAudienceIds(actorId: string, actorRole: Role): Promise<string[]> {
+  const producerIds = await UsersRepository.findActiveIdsByRole(Role.PRODUCER);
+  const managerIds = await UsersRepository.findActiveIdsByRole(Role.PRICE_MANAGER);
+  const audienceManagerIds =
+    actorRole === Role.PRICE_MANAGER ? managerIds.filter((id) => id !== actorId) : managerIds;
+  return [...producerIds, ...audienceManagerIds];
 }
 
 /**
@@ -34,7 +49,7 @@ export class CoffeeTypesService {
     return coffeeType;
   }
 
-  static async create(input: CreateCoffeeTypeInput) {
+  static async create(input: CreateCoffeeTypeInput, actorId: string, actorRole: Role) {
     const existing = await CoffeeTypesRepository.findByName(input.name);
     if (existing) {
       throw new AppError("Ya existe un tipo de cafe con ese nombre", 409);
@@ -44,7 +59,20 @@ export class CoffeeTypesService {
       name: input.name,
       currentPrice: input.currentPrice,
     });
-    return serialize(created);
+    const serialized = serialize(created);
+
+    try {
+      const audienceIds = await getPriceAudienceIds(actorId, actorRole);
+      await PushNotificationService.sendPushToUsers(
+        audienceIds,
+        "Nuevo tipo de cafe",
+        `Se agrego ${serialized.name} al listado de precios`
+      );
+    } catch (error) {
+      console.error("[coffeeTypes] push failed:", error);
+    }
+
+    return serialized;
   }
 
   /**
@@ -58,9 +86,22 @@ export class CoffeeTypesService {
     return serialize(updated);
   }
 
-  static async changePrice(id: string, price: number, changedById: string) {
+  static async changePrice(id: string, price: number, changedById: string, actorRole: Role) {
     await this.getById(id);
     const updated = await CoffeeTypesRepository.changePrice(id, price, changedById);
-    return serialize(updated);
+    const serialized = serialize(updated);
+
+    try {
+      const audienceIds = await getPriceAudienceIds(changedById, actorRole);
+      await PushNotificationService.sendPushToUsers(
+        audienceIds,
+        "Precio actualizado",
+        `${serialized.name} ahora vale $${serialized.currentPrice} por kilogramo`
+      );
+    } catch (error) {
+      console.error("[coffeeTypes] push failed:", error);
+    }
+
+    return serialized;
   }
 }

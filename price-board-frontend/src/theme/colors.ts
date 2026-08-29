@@ -23,7 +23,7 @@ export interface ThemeColors {
 }
 
 export const lightColors: ThemeColors = {
-  background: "#EEF2DF",
+  background: "#EFE3D0",
   card: "#FBF6EC",
   primary: "#6E1423",
   primaryLight: "#8C1D2E",
@@ -39,7 +39,7 @@ export const lightColors: ThemeColors = {
 };
 
 export const darkColors: ThemeColors = {
-  background: "#1B2410",
+  background: "#241B14",
   card: "#332619",
   primary: "#9A2E3F",
   primaryLight: "#8C1D2E",

@@ -39,4 +39,8 @@ export class AuthRepository {
       data: { revoked: true },
     });
   }
+
+  static updatePasswordHash(userId: string, passwordHash: string) {
+    return prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+  }
 }

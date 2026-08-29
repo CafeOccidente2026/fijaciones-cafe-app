@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AuthApi } from "../api/authApi";
+import { UsersApi } from "../api/usersApi";
 import { SecureTokenStorage } from "./secureTokenStorage";
 import { registerSessionExpiredHandler } from "../api/httpClient";
+import { registerForPushNotificationsAsync } from "../notifications/pushRegistration";
 import { AuthUser } from "../types/auth.types";
 
 interface AuthContextValue {
@@ -18,6 +20,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // Remembers the token we registered so logout can remove that same one.
+  const deviceTokenRef = useRef<string | null>(null);
 
   // On app start: if there's a saved access token, we still ask the user
   // to log in again for now (session restore across app restarts can be
@@ -42,6 +46,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  // Registers this device for push once there's a logged-in user, not as
+  // part of login() itself - it must also run after the session-restore
+  // path once that's added, and a failure here must never block login.
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    (async () => {
+      try {
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+          await UsersApi.registerDeviceToken(token);
+          deviceTokenRef.current = token;
+        }
+      } catch (error) {
+        console.error("[push] failed to register device token:", error);
+      }
+    })();
+  }, [user]);
+
   async function login(username: string, password: string): Promise<void> {
     const result = await AuthApi.login(username, password);
     await SecureTokenStorage.saveTokens(result.accessToken, result.refreshToken);
@@ -49,6 +73,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function logout(): Promise<void> {
+    if (deviceTokenRef.current) {
+      try {
+        await UsersApi.removeDeviceToken(deviceTokenRef.current);
+      } catch {
+        // Even if this fails, we still clear the local session below.
+      }
+      deviceTokenRef.current = null;
+    }
+
     const refreshToken = await SecureTokenStorage.getRefreshToken();
     if (refreshToken) {
       try {

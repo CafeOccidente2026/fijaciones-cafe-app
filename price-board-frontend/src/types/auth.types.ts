@@ -14,3 +14,8 @@ export interface LoginResponse {
   refreshToken: string;
   user: AuthUser;
 }
+
+export interface ChangePasswordResponse {
+  accessToken: string;
+  refreshToken: string;
+}

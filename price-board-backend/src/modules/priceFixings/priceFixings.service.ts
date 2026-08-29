@@ -1,6 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 import { PriceFixingsRepository } from "./priceFixings.repository";
 import { CoffeeTypesRepository } from "../coffeeTypes/coffeeTypes.repository";
+import { UsersRepository } from "../users/users.repository";
+import { PushNotificationService } from "../../services/pushNotification.service";
 import { AppError } from "../../utils/apiResponse.util";
 import { HistoryQuery } from "./priceFixings.validation";
 
@@ -61,6 +63,18 @@ export class PriceFixingsService {
       kilos,
       priceAtFixing: Number(coffeeType.currentPrice),
     });
+
+    try {
+      const managerIds = await UsersRepository.findActiveIdsByRole(Role.PRICE_MANAGER);
+      const user = await UsersRepository.findById(userId);
+      await PushNotificationService.sendPushToUsers(
+        managerIds,
+        "Nueva fijacion",
+        `${user?.fullName ?? "Un productor"} fijo ${kilos} kg de ${coffeeType.name}`
+      );
+    } catch (error) {
+      console.error("[priceFixings] push failed:", error);
+    }
 
     return serializeOwn(created);
   }

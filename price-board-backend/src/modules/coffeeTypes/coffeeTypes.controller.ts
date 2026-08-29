@@ -28,7 +28,7 @@ export class CoffeeTypesController {
       throw new AppError(parsed.error.errors[0]?.message ?? "Datos invalidos", 422);
     }
 
-    const coffeeType = await CoffeeTypesService.create(parsed.data);
+    const coffeeType = await CoffeeTypesService.create(parsed.data, req.auth!.userId, req.auth!.role);
     ApiResponse.success(res, coffeeType, 201);
   }
 
@@ -51,7 +51,8 @@ export class CoffeeTypesController {
     const coffeeType = await CoffeeTypesService.changePrice(
       req.params.id,
       parsed.data.price,
-      req.auth!.userId
+      req.auth!.userId,
+      req.auth!.role
     );
     ApiResponse.success(res, coffeeType);
   }
