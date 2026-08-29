@@ -22,6 +22,12 @@ enum UserStatus {
   SUSPENDED
 }
 
+enum NotificationAudience {
+  ALL_PRODUCER // Todos los Fieles de Compra activos
+  ALL_PRICE_MANAGER // Todos los Encargados activos
+  SPECIFIC // Solo los destinatarios listados en NotificationRecipient
+}
+
 // ---------------------------------------------------------------------------
 // Models
 // ---------------------------------------------------------------------------
@@ -112,6 +118,7 @@ model Notification {
   senderId   String
   sender     User                     @relation("SentNotifications", fields: [senderId], references: [id])
   message    String
+  audience   NotificationAudience
   createdAt  DateTime                 @default(now())
   recipients NotificationRecipient[]
 

@@ -47,7 +47,7 @@ export const strings = {
     producer: {
       fix: "Fijar",
       history: "Historial",
-      notifications: "Avisos",
+      notifications: "Notificaciones",
       profile: "Perfil",
     },
     priceManager: {
@@ -62,6 +62,7 @@ export const strings = {
       coffeeTypes: "Precios",
       history: "Historial",
       chart: "Gráfico",
+      notify: "Notificar",
       profile: "Perfil",
     },
   },
@@ -196,14 +197,29 @@ export const strings = {
   sendNotification: {
     title: "Enviar notificación",
     messageLabel: "Mensaje",
-    messagePlaceholder: "Escribe el mensaje para los fieles de compra",
+    messagePlaceholder: "Escribe el mensaje a enviar",
     toAll: "A todos los fieles de compra",
+    toAllPriceManagers: "A todos los Encargados",
     toSpecific: "Elegir destinatarios específicos",
     missingMessage: "Escribe un mensaje",
     missingRecipients: "Selecciona al menos un destinatario",
     success: (count: number) => `Notificación enviada a ${count} persona(s)`,
     sendButton: "Enviar",
     empty: "No hay fieles de compra registrados.",
+    emptyAdmin: "No hay usuarios disponibles para notificar.",
+    historyButtonLabel: "Ver historial de notificaciones",
+  },
+
+  notificationsHistory: {
+    title: "Historial de notificaciones",
+    sentTab: "Enviadas",
+    receivedTab: "Recibidas",
+    sentEmpty: "Aún no has enviado notificaciones.",
+    audienceAllProducer: "Enviado a todos los Fieles de Compra",
+    audienceAllPriceManager: "Enviado a todos los Encargados",
+    audienceSpecific: (count: number) =>
+      `Enviado a ${count} ${count === 1 ? "destinatario" : "destinatarios"}`,
+    meta: (audience: string, date: string) => `${audience} · ${date}`,
   },
 
   adminUsers: {

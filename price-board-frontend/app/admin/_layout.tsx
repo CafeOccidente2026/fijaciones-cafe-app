@@ -12,9 +12,10 @@ export default function AdminLayout() {
           { name: "coffee-types", title: strings.tabs.admin.coffeeTypes, icon: "cafe-outline" },
           { name: "history", title: strings.tabs.admin.history, icon: "time-outline" },
           { name: "chart", title: strings.tabs.admin.chart, icon: "bar-chart-outline" },
+          { name: "notify", title: strings.tabs.admin.notify, icon: "send-outline" },
           { name: "profile", title: strings.tabs.admin.profile, icon: "person-outline" },
         ]}
-        hidden={["create-user"]}
+        hidden={["create-user", "notifications-history"]}
       />
     </RoleGuard>
   );

@@ -14,7 +14,7 @@ export default function PriceManagerLayout() {
           { name: "send-notification", title: strings.tabs.priceManager.sendNotification, icon: "send-outline" },
           { name: "profile", title: strings.tabs.priceManager.profile, icon: "person-outline" },
         ]}
-        hidden={["today-detail/[coffeeTypeId]"]}
+        hidden={["today-detail/[coffeeTypeId]", "notifications-history"]}
       />
     </RoleGuard>
   );

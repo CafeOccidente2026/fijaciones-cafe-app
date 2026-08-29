@@ -16,6 +16,13 @@ router.post(
   asyncHandler(NotificationsController.send)
 );
 
+// ADMIN + PRICE_MANAGER review the notifications they themselves sent.
+router.get(
+  "/sent-by-me",
+  authorize(Role.ADMIN, Role.PRICE_MANAGER),
+  asyncHandler(NotificationsController.sentByMe)
+);
+
 // Any authenticated user reads and marks their own notifications.
 router.get("/my-notifications", asyncHandler(NotificationsController.myNotifications));
 router.patch("/:notificationRecipientId/read", asyncHandler(NotificationsController.markRead));

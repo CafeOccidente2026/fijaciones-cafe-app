@@ -1,18 +1,39 @@
+import { NotificationAudience, Role } from "@prisma/client";
 import { NotificationsRepository } from "./notifications.repository";
+import { UsersRepository } from "../users/users.repository";
 import { AppError } from "../../utils/apiResponse.util";
 import { SendNotificationInput } from "./notifications.validation";
 import { PushNotificationService } from "../../services/pushNotification.service";
 
 /**
  * Single responsibility: business rules for sending and reading
- * notifications. "all" fans out to every other active user.
+ * notifications. Who a sender is allowed to notify depends on their
+ * role, so that check lives here (not in the route's `authorize`, which
+ * only knows the role - not the request body).
  */
 export class NotificationsService {
-  static async send(senderId: string, input: SendNotificationInput) {
-    const recipientIds =
-      input.recipientIds === "all"
-        ? await NotificationsRepository.findActiveRecipientIds(senderId)
-        : Array.from(new Set(input.recipientIds)).filter((id) => id !== senderId);
+  static async send(senderId: string, senderRole: Role, input: SendNotificationInput) {
+    if (senderRole === Role.PRICE_MANAGER) {
+      if (input.audience === NotificationAudience.ALL_PRICE_MANAGER) {
+        throw new AppError("No tienes permiso para notificar a otros encargados", 403);
+      }
+      if (input.audience === NotificationAudience.SPECIFIC) {
+        await this.assertRecipientsHaveRole(
+          input.recipientIds ?? [],
+          [Role.PRODUCER],
+          "Solo puedes notificar a Fieles de Compra"
+        );
+      }
+    } else if (input.audience === NotificationAudience.SPECIFIC) {
+      // Only ADMIN and PRICE_MANAGER reach this service (see notifications.routes.ts).
+      await this.assertRecipientsHaveRole(
+        input.recipientIds ?? [],
+        [Role.PRODUCER, Role.PRICE_MANAGER],
+        "Solo puedes notificar a Fieles de Compra o Encargados"
+      );
+    }
+
+    const recipientIds = await this.resolveRecipientIds(input.audience, input.recipientIds);
 
     if (recipientIds.length === 0) {
       throw new AppError("No hay destinatarios validos para esta notificacion", 400);
@@ -21,6 +42,7 @@ export class NotificationsService {
     const notification = await NotificationsRepository.createWithRecipients(
       senderId,
       input.message,
+      input.audience,
       recipientIds
     );
 
@@ -30,7 +52,23 @@ export class NotificationsService {
       console.error("[notifications] push failed:", error);
     }
 
-    return { id: notification.id, recipientCount: notification.recipients.length };
+    return {
+      id: notification.id,
+      audience: notification.audience,
+      recipientCount: notification.recipients.length,
+    };
+  }
+
+  static async getSentByMe(senderId: string) {
+    const notifications = await NotificationsRepository.findSentByUser(senderId);
+
+    return notifications.map((notification) => ({
+      id: notification.id,
+      message: notification.message,
+      audience: notification.audience,
+      createdAt: notification.createdAt,
+      recipientCount: notification._count.recipients,
+    }));
   }
 
   static async getMyNotifications(userId: string) {
@@ -59,5 +97,34 @@ export class NotificationsService {
 
     await NotificationsRepository.markAsRead(notificationRecipientId);
     return { notificationRecipientId, read: true };
+  }
+
+  /** Resolves the audience picked in the request to the actual recipient ids. */
+  private static async resolveRecipientIds(
+    audience: NotificationAudience,
+    recipientIds?: string[]
+  ): Promise<string[]> {
+    switch (audience) {
+      case NotificationAudience.ALL_PRODUCER:
+        return UsersRepository.findActiveIdsByRole(Role.PRODUCER);
+      case NotificationAudience.ALL_PRICE_MANAGER:
+        return UsersRepository.findActiveIdsByRole(Role.PRICE_MANAGER);
+      case NotificationAudience.SPECIFIC:
+        return Array.from(new Set(recipientIds ?? []));
+    }
+  }
+
+  /** Rejects the request (403) unless every recipient has one of the allowed roles. */
+  private static async assertRecipientsHaveRole(
+    recipientIds: string[],
+    allowedRoles: Role[],
+    errorMessage: string
+  ): Promise<void> {
+    const users = await UsersRepository.findByIds(recipientIds);
+    const allValid = users.length === recipientIds.length && users.every((user) => allowedRoles.includes(user.role));
+
+    if (!allValid) {
+      throw new AppError(errorMessage, 403);
+    }
   }
 }

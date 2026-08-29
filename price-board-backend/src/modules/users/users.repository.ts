@@ -56,6 +56,11 @@ export class UsersRepository {
     return users.map((user) => user.id);
   }
 
+  /** Used to validate a hand-picked notification recipient list by role. */
+  static findByIds(ids: string[]) {
+    return prisma.user.findMany({ where: { id: { in: ids } }, select: { id: true, role: true } });
+  }
+
   static updateStatus(id: string, status: UserStatus) {
     return prisma.user.update({ where: { id }, data: { status }, select: publicUserSelect });
   }

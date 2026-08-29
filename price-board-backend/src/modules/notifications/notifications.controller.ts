@@ -13,8 +13,13 @@ export class NotificationsController {
       throw new AppError(parsed.error.errors[0]?.message ?? "Datos invalidos", 422);
     }
 
-    const result = await NotificationsService.send(req.auth!.userId, parsed.data);
+    const result = await NotificationsService.send(req.auth!.userId, req.auth!.role, parsed.data);
     ApiResponse.success(res, result, 201);
+  }
+
+  static async sentByMe(req: Request, res: Response): Promise<void> {
+    const notifications = await NotificationsService.getSentByMe(req.auth!.userId);
+    ApiResponse.success(res, notifications);
   }
 
   static async myNotifications(req: Request, res: Response): Promise<void> {

@@ -1,3 +1,5 @@
+export type NotificationAudience = "ALL_PRODUCER" | "ALL_PRICE_MANAGER" | "SPECIFIC";
+
 export interface AppNotification {
   notificationRecipientId: string;
   message: string;
@@ -10,9 +12,17 @@ export interface AppNotification {
   readAt: string | null;
 }
 
-export type NotificationRecipients = "all" | string[];
+export interface SentNotification {
+  id: string;
+  message: string;
+  audience: NotificationAudience;
+  createdAt: string;
+  recipientCount: number;
+}
 
 export interface SendNotificationPayload {
   message: string;
-  recipientIds: NotificationRecipients;
+  audience: NotificationAudience;
+  /** Required only when audience is "SPECIFIC". */
+  recipientIds?: string[];
 }

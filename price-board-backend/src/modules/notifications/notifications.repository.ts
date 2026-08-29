@@ -1,4 +1,4 @@
-import { UserStatus } from "@prisma/client";
+import { NotificationAudience } from "@prisma/client";
 import { prisma } from "../../config/prismaClient";
 
 /**
@@ -6,24 +6,30 @@ import { prisma } from "../../config/prismaClient";
  * per-recipient rows (the bridge table that also tracks read state).
  */
 export class NotificationsRepository {
-  static async findActiveRecipientIds(exceptUserId: string): Promise<string[]> {
-    const users = await prisma.user.findMany({
-      where: { status: UserStatus.ACTIVE, id: { not: exceptUserId } },
-      select: { id: true },
-    });
-    return users.map((user) => user.id);
-  }
-
-  static createWithRecipients(senderId: string, message: string, recipientIds: string[]) {
+  static createWithRecipients(
+    senderId: string,
+    message: string,
+    audience: NotificationAudience,
+    recipientIds: string[]
+  ) {
     return prisma.notification.create({
       data: {
         senderId,
         message,
+        audience,
         recipients: {
           create: recipientIds.map((userId) => ({ userId })),
         },
       },
       include: { recipients: true },
+    });
+  }
+
+  static findSentByUser(senderId: string) {
+    return prisma.notification.findMany({
+      where: { senderId },
+      orderBy: { createdAt: "desc" },
+      include: { _count: { select: { recipients: true } } },
     });
   }
 
