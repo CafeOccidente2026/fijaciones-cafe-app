@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "price-board-frontend",
-    "slug": "price-board-frontend",
+    "name": "Fijaciones",
+    "slug": "fijaciones-cafe",
     "version": "1.0.0",
     "scheme": "priceboard",
     "orientation": "portrait",
@@ -22,22 +22,21 @@
         }
       ]
     ],
-    "icon": "./assets/icon.png",
+    "icon": "./assets/new-icon-1024.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
+        "backgroundColor": "#EFE3D0",
+        "foregroundImage": "./assets/new-adaptive-icon.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/new-favicon.png"
     }
   }
 }

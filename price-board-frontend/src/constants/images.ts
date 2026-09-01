@@ -7,7 +7,7 @@
  * asset later means changing one path in one file.
  */
 export const images = {
-  logo: require("../../assets/images/cafeoccidente-logo.png"),
+  logo: require("../../assets/new-logo-for-login.png"),
   woodBackgroundLight: require("../../assets/images/wood-bg-light.jpg"),
   woodBackgroundDark: require("../../assets/images/wood-bg-dark.jpg"),
 } as const;
