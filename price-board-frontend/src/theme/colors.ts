@@ -40,7 +40,7 @@ export const lightColors: ThemeColors = {
 
 export const darkColors: ThemeColors = {
   background: "#241B14",
-  card: "#332619",
+  card: "#4A3B30",
   primary: "#9A2E3F",
   primaryLight: "#8C1D2E",
   accent: "#C9A876",

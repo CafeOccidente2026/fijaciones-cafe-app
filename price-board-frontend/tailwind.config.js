@@ -17,7 +17,11 @@ module.exports = {
         "background-dark": "#241B14",
 
         card: "#FBF6EC",
-        "card-dark": "#332619",
+        // Lighter than background-dark on purpose: elevated surfaces read as
+        // "lighter than the page" in dark UIs, not darker - #332619 was too
+        // close in luminance to background-dark (#241B14) to separate from
+        // the wood texture. See Card.tsx for the paired metal-silver border.
+        "card-dark": "#4A3B30",
 
         primary: "#6E1423",
         "primary-light": "#8C1D2E",

@@ -13,7 +13,10 @@ interface CardProps {
  * subtle press (mobile) and hover (web) cue.
  */
 export function Card({ children, onPress, className = "" }: CardProps) {
-  const base = `rounded-2xl border border-border bg-card p-4 dark:border-border-dark dark:bg-card-dark ${className}`;
+  // dark:border-metal-silver/20 instead of dark:border-border-dark: a subtle
+  // metal edge reinforces the card/background separation in dark mode, on
+  // top of card-dark now being lighter than background-dark.
+  const base = `rounded-2xl border border-border bg-card p-4 dark:border-metal-silver/20 dark:bg-card-dark ${className}`;
 
   if (onPress) {
     return (
