@@ -33,14 +33,20 @@ export function SegmentedControl<T extends string>({
             accessibilityRole="tab"
             accessibilityState={{ selected: active }}
             className={`flex-1 items-center rounded-xl border py-2.5 hover:opacity-90 active:opacity-80 ${
+              // Light mode: solid coffee-brown pill marks the active tab,
+              // solid card cream marks the inactive one. Dark mode
+              // untouched (dark: classes unchanged from before).
               active
-                ? "border-accent bg-accent-soft dark:border-accent-dark dark:bg-accent-soft-dark"
-                : "border-border dark:border-border-dark"
+                ? "border-coffee bg-coffee dark:border-accent-dark dark:bg-accent-soft-dark"
+                : "border-border bg-card dark:border-border-dark dark:bg-transparent"
             }`}
           >
             <Text
               className={`text-sm font-semibold ${
-                active ? "text-primary dark:text-white" : "text-muted dark:text-muted-dark"
+                // Inactive tab used text-muted in light mode, too pale to
+                // read - text-primary fixes it. Active tab text is white in
+                // light mode now too, to read on the solid coffee fill.
+                active ? "text-white dark:text-white" : "text-primary dark:text-muted-dark"
               }`}
             >
               {option.label}

@@ -38,6 +38,12 @@ module.exports = {
         muted: "#7E6553",
         "muted-dark": "#BEAD9B",
 
+        // Solid coffee brown for "selected" pills (SegmentedControl, filter
+        // button) in light mode - deliberately not wine (primary), a real
+        // coffee-bean tone instead. Light-mode-only, so no "-dark" sibling
+        // and not mirrored in colors.ts (nothing reads it via a color prop).
+        coffee: "#4E342E",
+
         border: "#D9C6A8",
         "border-dark": "#4A392A",
 

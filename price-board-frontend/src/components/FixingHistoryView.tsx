@@ -136,7 +136,9 @@ export function FixingHistoryView({
     <Pressable
       onPress={() => setShowFilters((prev) => !prev)}
       accessibilityRole="button"
-      className="flex-row items-center gap-1 rounded-xl border border-border px-3 py-2 hover:opacity-90 active:opacity-80 dark:border-border-dark"
+      // bg-card/dark:bg-transparent: solid cream in light mode to match the
+      // segmented control pills next to it; dark mode stays as it was.
+      className="flex-row items-center gap-1 rounded-xl border border-border bg-card px-3 py-2 hover:opacity-90 active:opacity-80 dark:border-border-dark dark:bg-transparent"
     >
       <Ionicons name="options-outline" size={16} color={colors.primary} />
       <Text className="text-sm font-semibold text-primary dark:text-white">
