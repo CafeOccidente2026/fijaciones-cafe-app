@@ -15,7 +15,14 @@ export default function AdminLayout() {
           { name: "notify", title: strings.tabs.admin.notify, icon: "send-outline" },
           { name: "profile", title: strings.tabs.admin.profile, icon: "person-outline" },
         ]}
-        hidden={["create-user", "notifications-history"]}
+        hidden={[
+          "create-user",
+          "notifications-history",
+          "weekly-history",
+          "weekly-detail",
+          "weekly-by-user/[coffeeTypeId]",
+          "weekly-by-user/[coffeeTypeId]/[userId]",
+        ]}
       />
     </RoleGuard>
   );

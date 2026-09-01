@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Pressable, Text, TextInput, TextInputProps, View } from "react-native";
+import { Pressable, TextInput, TextInputProps, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { AppText } from "./AppText";
 import { useThemeColors } from "../theme/useThemeColors";
 import { strings } from "../constants/strings";
 
@@ -44,9 +45,9 @@ export function FormField({ label, secureToggle = false, rightIcon, ...inputProp
 
   return (
     <View className="mb-5">
-      <Text className="mb-2 text-xs font-semibold tracking-wide text-muted dark:text-muted-dark">
+      <AppText className="mb-2 text-xs font-semibold tracking-wide text-muted dark:text-muted-dark">
         {label.toUpperCase()}
-      </Text>
+      </AppText>
       <View>
         <TextInput
           placeholderTextColor={colors.placeholder}

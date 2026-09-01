@@ -3,6 +3,7 @@ import { CoffeeTypesService } from "./coffeeTypes.service";
 import {
   createCoffeeTypeSchema,
   listCoffeeTypesQuerySchema,
+  priceHistoryQuerySchema,
   updateCoffeeTypeSchema,
   updatePriceSchema,
 } from "./coffeeTypes.validation";
@@ -55,5 +56,15 @@ export class CoffeeTypesController {
       req.auth!.role
     );
     ApiResponse.success(res, coffeeType);
+  }
+
+  static async priceHistory(req: Request, res: Response): Promise<void> {
+    const parsed = priceHistoryQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      throw new AppError(parsed.error.errors[0]?.message ?? "Filtros invalidos", 422);
+    }
+
+    const history = await CoffeeTypesService.getPriceHistory(parsed.data);
+    ApiResponse.success(res, history);
   }
 }

@@ -23,3 +23,31 @@ export function getLastDaysRange(days = 30): { start: Date; end: Date } {
 
   return { start, end };
 }
+
+/** Monday 00:00:00.000 (server local time) of the week containing `date`. */
+export function getWeekStart(date: Date): Date {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  const day = start.getDay(); // 0 = Sunday ... 6 = Saturday
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + diffToMonday);
+  return start;
+}
+
+/** [Monday 00:00:00.000, Friday 23:59:59.999] of the week containing `date`. Defaults to now. */
+export function getWeekRange(date: Date = new Date()): { start: Date; end: Date } {
+  const start = getWeekStart(date);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 4);
+  end.setHours(23, 59, 59, 999);
+  return { start, end };
+}
+
+function pad(value: number): string {
+  return value.toString().padStart(2, "0");
+}
+
+/** Date -> "YYYY-MM-DD" in the server's local time (avoids the UTC shift of toISOString). */
+export function formatDateOnly(date: Date): string {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}

@@ -13,5 +13,13 @@ export const historyQuerySchema = z.object({
   dateTo: z.coerce.date().optional(),
 });
 
+export const weekQuerySchema = z.object({
+  weekStart: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Fecha de semana invalida, usa AAAA-MM-DD")
+    .optional(),
+});
+
 export type CreatePriceFixingInput = z.infer<typeof createPriceFixingSchema>;
 export type HistoryQuery = z.infer<typeof historyQuerySchema>;
+export type WeekQuery = z.infer<typeof weekQuerySchema>;

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prismaClient";
 
 /**
@@ -45,6 +46,27 @@ export class CoffeeTypesRepository {
       });
 
       return updated;
+    });
+  }
+
+  static findPriceHistory(filters: { coffeeTypeId?: string; dateFrom?: Date; dateTo?: Date }) {
+    const where: Prisma.PriceHistoryWhereInput = {};
+
+    if (filters.coffeeTypeId) where.coffeeTypeId = filters.coffeeTypeId;
+    if (filters.dateFrom || filters.dateTo) {
+      where.changedAt = {
+        ...(filters.dateFrom ? { gte: filters.dateFrom } : {}),
+        ...(filters.dateTo ? { lte: filters.dateTo } : {}),
+      };
+    }
+
+    return prisma.priceHistory.findMany({
+      where,
+      orderBy: { changedAt: "desc" },
+      include: {
+        coffeeType: { select: { id: true, name: true } },
+        changedBy: { select: { id: true, fullName: true, role: true } },
+      },
     });
   }
 }

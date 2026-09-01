@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { AppText } from "./AppText";
 import { Card } from "./Card";
 import { DetailedPriceFixing } from "../types/priceFixing.types";
 import { formatCurrency, formatDateTime, formatKilos } from "../utils/format";
@@ -16,25 +17,25 @@ import { strings } from "../constants/strings";
 export function FixingDetailCard({ fixing }: { fixing: DetailedPriceFixing }) {
   return (
     <Card>
-      <Text className="text-base font-semibold text-primary dark:text-white">
+      <AppText className="text-base font-semibold text-primary dark:text-white">
         {fixing.user.fullName}
-      </Text>
-      <Text className="text-sm text-muted dark:text-muted-dark">
+      </AppText>
+      <AppText className="text-sm text-muted dark:text-muted-dark">
         {fixing.user.municipality
           ? strings.fixingCard.municipalityOf(fixing.user.municipality)
           : strings.common.noMunicipality}
-      </Text>
-      <Text className="mt-1 text-sm text-muted dark:text-muted-dark">
+      </AppText>
+      <AppText className="mt-1 text-sm text-muted dark:text-muted-dark">
         {formatDateTime(fixing.createdAt)}
-      </Text>
+      </AppText>
       <View className="mt-2 border-t border-border pt-2 dark:border-border-dark">
-        <Text className="text-base text-primary dark:text-white">
+        <AppText className="text-base text-primary dark:text-white">
           {strings.fixingCard.summary(
             formatKilos(fixing.kilos),
             fixing.coffeeType.name,
             formatCurrency(fixing.priceAtFixing)
           )}
-        </Text>
+        </AppText>
       </View>
     </Card>
   );

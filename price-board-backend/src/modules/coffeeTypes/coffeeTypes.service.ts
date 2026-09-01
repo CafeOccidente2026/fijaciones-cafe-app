@@ -1,9 +1,9 @@
-import { CoffeeType, Role } from "@prisma/client";
+import { CoffeeType, Prisma, Role } from "@prisma/client";
 import { CoffeeTypesRepository } from "./coffeeTypes.repository";
 import { UsersRepository } from "../users/users.repository";
 import { PushNotificationService } from "../../services/pushNotification.service";
 import { AppError } from "../../utils/apiResponse.util";
-import { CreateCoffeeTypeInput } from "./coffeeTypes.validation";
+import { CreateCoffeeTypeInput, PriceHistoryQuery } from "./coffeeTypes.validation";
 
 /** Prisma returns Decimal objects; the API always sends plain numbers. */
 function serialize(coffeeType: CoffeeType) {
@@ -14,6 +14,23 @@ function serialize(coffeeType: CoffeeType) {
     currentPrice: Number(coffeeType.currentPrice),
     createdAt: coffeeType.createdAt,
     updatedAt: coffeeType.updatedAt,
+  };
+}
+
+type PriceHistoryRow = Prisma.PriceHistoryGetPayload<{
+  include: {
+    coffeeType: { select: { id: true; name: true } };
+    changedBy: { select: { id: true; fullName: true; role: true } };
+  };
+}>;
+
+function serializePriceHistory(row: PriceHistoryRow) {
+  return {
+    id: row.id,
+    coffeeType: row.coffeeType,
+    price: Number(row.price),
+    changedBy: row.changedBy,
+    changedAt: row.changedAt,
   };
 }
 
@@ -103,5 +120,10 @@ export class CoffeeTypesService {
     }
 
     return serialized;
+  }
+
+  static async getPriceHistory(filters: PriceHistoryQuery) {
+    const rows = await CoffeeTypesRepository.findPriceHistory(filters);
+    return rows.map(serializePriceHistory);
   }
 }

@@ -1,7 +1,8 @@
 import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { AppText } from "./AppText";
 import { strings } from "../constants/strings";
 
 interface ScreenProps {
@@ -34,16 +35,16 @@ export function Screen({
     <View className="mx-4 mt-3 rounded-2xl bg-card/90 px-4 py-3 dark:bg-card-dark/90">
       {showBack ? (
         <Pressable onPress={() => router.back()} className="mb-1 self-start py-1">
-          <Text className="text-sm font-semibold text-primary-light dark:text-accent">
+          <AppText className="text-sm font-semibold text-primary-light dark:text-accent">
             {strings.common.back}
-          </Text>
+          </AppText>
         </Pressable>
       ) : null}
       <View className="flex-row items-start justify-between">
         <View className="flex-1 pr-3">
-          <Text className="text-2xl font-bold text-primary dark:text-white">{title}</Text>
+          <AppText className="text-2xl font-bold text-primary dark:text-white">{title}</AppText>
           {subtitle ? (
-            <Text className="mt-1 text-sm text-muted dark:text-muted-dark">{subtitle}</Text>
+            <AppText className="mt-1 text-sm text-muted dark:text-muted-dark">{subtitle}</AppText>
           ) : null}
         </View>
         {headerRight}

@@ -53,3 +53,42 @@ export interface CreatePriceFixingPayload {
   coffeeTypeId: string;
   kilos: number;
 }
+
+/** One bar of GET /price-fixings/weekly-chart. */
+export interface WeeklyChartItem {
+  coffeeTypeId: string;
+  coffeeTypeName: string;
+  totalKilos: number;
+  fixingsCount: number;
+}
+
+/** GET /price-fixings/weekly-chart. */
+export interface WeeklyChartData {
+  weekStart: string;
+  weekEnd: string;
+  items: WeeklyChartItem[];
+}
+
+/** One row of GET /price-fixings/weekly-history. */
+export interface WeeklyHistoryWeek {
+  weekStart: string;
+  weekEnd: string;
+  totalKilos: number;
+  fixingsCount: number;
+}
+
+/** One row of GET /price-fixings/weekly-chart/:coffeeTypeId/by-user. */
+export interface WeeklyByUserItem {
+  userId: string;
+  fullName: string;
+  municipality: string | null;
+  totalKilos: number;
+  fixingsCount: number;
+}
+
+/** One row of GET /price-fixings/weekly-chart/:coffeeTypeId/by-user/:userId. */
+export interface WeeklyUserFixing {
+  kilos: number;
+  priceAtFixing: number;
+  createdAt: string;
+}

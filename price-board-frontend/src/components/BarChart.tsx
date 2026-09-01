@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 export interface BarChartDatum {
   label: string;
@@ -12,6 +12,8 @@ interface BarChartProps {
   data: BarChartDatum[];
   /** Formats the numeric value for display (e.g. kilos). */
   formatValue?: (value: number) => string;
+  /** When set, each bar becomes tappable (e.g. to open a drill-down). */
+  onPressItem?: (index: number) => void;
 }
 
 /**
@@ -19,15 +21,19 @@ interface BarChartProps {
  * views (no chart library / native dependency, so it just works in Expo
  * Go). Each bar is scaled to the largest value in the set.
  */
-export function BarChart({ data, formatValue = (value) => value.toString() }: BarChartProps) {
+export function BarChart({
+  data,
+  formatValue = (value) => value.toString(),
+  onPressItem,
+}: BarChartProps) {
   const max = Math.max(...data.map((item) => item.value), 1);
 
   return (
     <View className="gap-4">
-      {data.map((item) => {
+      {data.map((item, index) => {
         const widthPercent = Math.max(6, Math.round((item.value / max) * 100));
-        return (
-          <View key={item.label}>
+        const bar = (
+          <>
             <View className="mb-1 flex-row items-center justify-between">
               <Text
                 className="flex-1 pr-2 text-sm font-semibold text-primary dark:text-white"
@@ -48,7 +54,22 @@ export function BarChart({ data, formatValue = (value) => value.toString() }: Ba
             {item.caption ? (
               <Text className="mt-1 text-xs text-muted dark:text-muted-dark">{item.caption}</Text>
             ) : null}
-          </View>
+          </>
+        );
+
+        if (!onPressItem) {
+          return <View key={item.label}>{bar}</View>;
+        }
+
+        return (
+          <Pressable
+            key={item.label}
+            onPress={() => onPressItem(index)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
+            className="hover:opacity-90"
+          >
+            {bar}
+          </Pressable>
         );
       })}
     </View>

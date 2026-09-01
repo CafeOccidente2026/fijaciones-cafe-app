@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { AppText } from "./AppText";
 import { Card } from "./Card";
 import { SentNotification } from "../types/notification.types";
 import { formatDateTime } from "../utils/format";
@@ -24,10 +24,10 @@ function audienceLabel(notification: SentNotification): string {
 export function SentNotificationItem({ notification }: { notification: SentNotification }) {
   return (
     <Card>
-      <Text className="text-base font-semibold text-primary dark:text-white">{notification.message}</Text>
-      <Text className="mt-1 text-xs text-muted dark:text-muted-dark">
+      <AppText className="text-base font-semibold text-primary dark:text-white">{notification.message}</AppText>
+      <AppText className="mt-1 text-xs text-muted dark:text-muted-dark">
         {strings.notificationsHistory.meta(audienceLabel(notification), formatDateTime(notification.createdAt))}
-      </Text>
+      </AppText>
     </Card>
   );
 }

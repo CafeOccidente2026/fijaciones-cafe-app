@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { AppText } from "../../src/components/AppText";
 import { useFocusEffect } from "expo-router";
 import { Screen } from "../../src/components/Screen";
 import { Card } from "../../src/components/Card";
@@ -123,9 +124,9 @@ export default function FixPriceScreen() {
               {novelIds.size > 0 ? (
                 <View className="mb-3 flex-row items-center gap-2">
                   <Badge label={novelIds.size} tone="danger" />
-                  <Text className="flex-1 text-xs text-muted dark:text-muted-dark">
+                  <AppText className="flex-1 text-xs text-muted dark:text-muted-dark">
                     {strings.producerFix.priceUpdatesBadge}
-                  </Text>
+                  </AppText>
                 </View>
               ) : null}
 
@@ -151,13 +152,13 @@ export default function FixPriceScreen() {
               />
 
               {formError ? (
-                <Text className="mb-3 text-sm text-danger dark:text-danger-dark">{formError}</Text>
+                <AppText className="mb-3 text-sm text-danger dark:text-danger-dark">{formError}</AppText>
               ) : null}
               {successMessage ? (
                 <View className="mb-3 rounded-xl bg-accent-soft p-3 dark:bg-accent-soft-dark">
-                  <Text className="text-center text-sm font-semibold text-primary dark:text-white">
+                  <AppText className="text-center text-sm font-semibold text-primary dark:text-white">
                     {successMessage}
-                  </Text>
+                  </AppText>
                 </View>
               ) : null}
 

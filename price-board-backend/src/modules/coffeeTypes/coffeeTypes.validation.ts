@@ -20,4 +20,11 @@ export const listCoffeeTypesQuerySchema = z.object({
     .transform((value) => value === "true"),
 });
 
+export const priceHistoryQuerySchema = z.object({
+  coffeeTypeId: z.string().uuid().optional(),
+  dateFrom: z.coerce.date().optional(),
+  dateTo: z.coerce.date().optional(),
+});
+
 export type CreateCoffeeTypeInput = z.infer<typeof createCoffeeTypeSchema>;
+export type PriceHistoryQuery = z.infer<typeof priceHistoryQuerySchema>;

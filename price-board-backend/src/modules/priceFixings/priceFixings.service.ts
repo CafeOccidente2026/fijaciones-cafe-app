@@ -4,6 +4,7 @@ import { CoffeeTypesRepository } from "../coffeeTypes/coffeeTypes.repository";
 import { UsersRepository } from "../users/users.repository";
 import { PushNotificationService } from "../../services/pushNotification.service";
 import { AppError } from "../../utils/apiResponse.util";
+import { formatDateOnly, getWeekRange } from "../../utils/dateRange.util";
 import { HistoryQuery } from "./priceFixings.validation";
 
 type FixingWithCoffeeType = Prisma.PriceFixingGetPayload<{
@@ -40,6 +41,12 @@ function serializeDetailed(fixing: FixingWithUser) {
     priceAtFixing: Number(fixing.priceAtFixing),
     createdAt: fixing.createdAt,
   };
+}
+
+/** "YYYY-MM-DD" is parsed as local midnight (not UTC) before resolving its Mon-Fri week. */
+function resolveWeekRange(weekStart?: string): { start: Date; end: Date } {
+  const reference = weekStart ? new Date(`${weekStart}T00:00:00`) : new Date();
+  return getWeekRange(reference);
 }
 
 /**
@@ -100,5 +107,33 @@ export class PriceFixingsService {
 
   static getMonthlyChartData() {
     return PriceFixingsRepository.sumLast30DaysByType();
+  }
+
+  /** Bar-chart totals by coffee type for one Mon-Fri week (current week if `weekStart` is omitted). */
+  static async getWeeklyChart(weekStart?: string) {
+    const { start, end } = resolveWeekRange(weekStart);
+    const items = await PriceFixingsRepository.sumByTypeInRange(start, end);
+    return { weekStart: formatDateOnly(start), weekEnd: formatDateOnly(end), items };
+  }
+
+  /** Drill-down level 1: who fixed a given coffee type, within one week. */
+  static getWeeklyByUser(coffeeTypeId: string, weekStart?: string) {
+    const { start, end } = resolveWeekRange(weekStart);
+    return PriceFixingsRepository.sumByUserInRange(coffeeTypeId, start, end);
+  }
+
+  /** Drill-down level 2: one user's individual fixings of a type, within one week. */
+  static async getWeeklyByUserFixings(coffeeTypeId: string, userId: string, weekStart?: string) {
+    const { start, end } = resolveWeekRange(weekStart);
+    const rows = await PriceFixingsRepository.findByUserAndTypeInRange(coffeeTypeId, userId, start, end);
+    return rows.map((row) => ({
+      kilos: Number(row.kilos),
+      priceAtFixing: Number(row.priceAtFixing),
+      createdAt: row.createdAt,
+    }));
+  }
+
+  static getWeeklyHistory() {
+    return PriceFixingsRepository.findWeeklyHistory();
   }
 }

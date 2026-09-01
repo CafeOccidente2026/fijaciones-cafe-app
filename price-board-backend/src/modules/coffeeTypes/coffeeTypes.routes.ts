@@ -12,6 +12,13 @@ router.use(authenticate);
 // Any authenticated role can read the catalog.
 router.get("/", asyncHandler(CoffeeTypesController.list));
 
+// ADMIN only: audit trail of every price change.
+router.get(
+  "/price-history",
+  authorize(Role.ADMIN),
+  asyncHandler(CoffeeTypesController.priceHistory)
+);
+
 // Only ADMIN manages the catalog itself.
 router.post("/", authorize(Role.ADMIN), asyncHandler(CoffeeTypesController.create));
 router.patch("/:id", authorize(Role.ADMIN), asyncHandler(CoffeeTypesController.update));

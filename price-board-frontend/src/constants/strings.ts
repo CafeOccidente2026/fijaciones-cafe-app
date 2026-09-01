@@ -276,10 +276,48 @@ export const strings = {
 
   adminChart: {
     title: "Gráfico",
-    subtitle: "Kilos fijados por tipo de café en los últimos 30 días",
-    empty: "No hay fijaciones en los últimos 30 días.",
-    typesWithActivity: (count: number) => `Total de tipos con actividad: ${count}`,
+    weekOf: (range: string) => `Semana del ${range}`,
+    historyButtonLabel: "Ver historial de semanas",
+    empty: "No hay fijaciones en esta semana.",
     fixingCount: (count: number) => `${count} ${count === 1 ? "fijación" : "fijaciones"}`,
+    downloadReport: "Descargar reporte",
+    downloading: "Descargando...",
+    downloadError: "No se pudo descargar el reporte. Intenta de nuevo.",
+  },
+
+  weeklyByUser: {
+    subtitle: "Fieles de Compra que fijaron esta semana",
+    empty: "Nadie fijó este tipo de café en esta semana.",
+    row: (name: string, kilos: string) => `${name} — ${kilos}`,
+  },
+
+  weeklyUserFixings: {
+    subtitle: (coffeeTypeName: string) => `Fijaciones de ${coffeeTypeName} esta semana`,
+    empty: "Esta persona no tiene fijaciones de este tipo en esta semana.",
+    row: (time: string, kilos: string) => `${time} — ${kilos}`,
+  },
+
+  weeklyHistory: {
+    title: "Historial de semanas",
+    subtitle: "Semanas ya cerradas, de la más reciente a la más antigua",
+    empty: "Aún no hay semanas cerradas con fijaciones.",
+    fixingCount: (count: number) => `${count} ${count === 1 ? "fijación" : "fijaciones"}`,
+  },
+
+  priceHistory: {
+    fixingsTab: "Fijaciones",
+    pricesTab: "Cambios de precio",
+    empty: "No hay cambios de precio que coincidan con los filtros.",
+    changedBy: (name: string, role: string) => `${name} (${role})`,
+    newPrice: (price: string) => `Nuevo precio: ${price} / kg`,
+  },
+
+  fontScale: {
+    title: "Tamaño de letra",
+    small: "Pequeño",
+    normal: "Normal",
+    large: "Grande",
+    extraLarge: "Muy grande",
   },
 
   logout: {

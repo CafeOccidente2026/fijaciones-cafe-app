@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList } from "react-native";
 import { Screen } from "./Screen";
 import { StateView } from "./StateView";
+import { SegmentedControl } from "./SegmentedControl";
 import { SentNotificationItem } from "./SentNotificationItem";
 import { NotificationsInboxList } from "./NotificationsInboxList";
 import { useAsync } from "../hooks/useAsync";
@@ -53,47 +54,5 @@ export function NotificationsHistoryScreen() {
         <NotificationsInboxList />
       )}
     </Screen>
-  );
-}
-
-function SegmentedControl<T extends string>({
-  options,
-  value,
-  onChange,
-}: {
-  options: { key: T; label: string; count?: number }[];
-  value: T;
-  onChange: (value: T) => void;
-}) {
-  return (
-    <View className="mb-3 flex-row gap-2">
-      {options.map((option) => {
-        const active = option.key === value;
-        return (
-          <Pressable
-            key={option.key}
-            onPress={() => onChange(option.key)}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: active }}
-            className={`flex-1 items-center rounded-xl border py-2.5 hover:opacity-90 active:opacity-80 ${
-              active
-                ? "border-accent bg-accent-soft dark:border-accent-dark dark:bg-accent-soft-dark"
-                : "border-border dark:border-border-dark"
-            }`}
-          >
-            <Text
-              className={`text-sm font-semibold ${
-                active ? "text-primary dark:text-white" : "text-muted dark:text-muted-dark"
-              }`}
-            >
-              {option.label}
-              {option.count ? (
-                <Text className="text-danger dark:text-danger-dark"> ({option.count})</Text>
-              ) : null}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
   );
 }

@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { AppText } from "./AppText";
 import { Card } from "./Card";
 import { AppNotification } from "../types/notification.types";
 import { formatDateTime } from "../utils/format";
@@ -25,7 +26,7 @@ export function NotificationItem({ notification, onPress }: NotificationItemProp
           }`}
         />
         <View className="flex-1">
-          <Text
+          <AppText
             className={`text-base ${
               notification.read
                 ? "text-primary-light dark:text-muted-dark"
@@ -33,13 +34,13 @@ export function NotificationItem({ notification, onPress }: NotificationItemProp
             }`}
           >
             {notification.message}
-          </Text>
-          <Text className="mt-1 text-xs text-muted dark:text-muted-dark">
+          </AppText>
+          <AppText className="mt-1 text-xs text-muted dark:text-muted-dark">
             {strings.notificationsInbox.meta(
               notification.sender.fullName,
               formatDateTime(notification.createdAt)
             )}
-          </Text>
+          </AppText>
         </View>
       </View>
     </Card>

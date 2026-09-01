@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { AppText } from "./AppText";
 import { Card } from "./Card";
 import { MyPriceFixing } from "../types/priceFixing.types";
 import { formatCurrency, formatDateTime, formatKilos } from "../utils/format";
@@ -14,20 +15,20 @@ export function HistoryListItem({ fixing }: { fixing: MyPriceFixing }) {
   return (
     <Card>
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-semibold text-primary dark:text-white">
+        <AppText className="text-base font-semibold text-primary dark:text-white">
           {fixing.coffeeType.name}
-        </Text>
-        <Text className="text-base font-bold text-primary dark:text-white">
+        </AppText>
+        <AppText className="text-base font-bold text-primary dark:text-white">
           {formatKilos(fixing.kilos)}
-        </Text>
+        </AppText>
       </View>
       <View className="mt-1 flex-row items-center justify-between">
-        <Text className="text-sm text-muted dark:text-muted-dark">
+        <AppText className="text-sm text-muted dark:text-muted-dark">
           {formatDateTime(fixing.createdAt)}
-        </Text>
-        <Text className="text-sm text-accent dark:text-accent-dark">
+        </AppText>
+        <AppText className="text-sm text-accent dark:text-accent-dark">
           {strings.fixingCard.pricePerKg(formatCurrency(fixing.priceAtFixing))}
-        </Text>
+        </AppText>
       </View>
     </Card>
   );

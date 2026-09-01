@@ -60,3 +60,41 @@ export function formatDate(iso: string): string {
 export function roleLabel(role: string): string {
   return strings.roles[role] ?? role;
 }
+
+/** "YYYY-MM-DD" -> local Date at midnight, no UTC-shift like `new Date(dateOnly)` has. */
+function parseDateOnly(value: string): Date {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+/** "YYYY-MM-DD" -> "28/08/2026" */
+export function formatDateOnlyDisplay(value: string): string {
+  const date = parseDateOnly(value);
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+}
+
+const MONTH_NAMES = [
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+];
+
+/** ("2026-08-25", "2026-08-29") -> "25 al 29 de agosto" (or "30 de agosto al 3 de septiembre"). */
+export function formatWeekRange(weekStart: string, weekEnd: string): string {
+  const start = parseDateOnly(weekStart);
+  const end = parseDateOnly(weekEnd);
+  const endLabel = `${end.getDate()} de ${MONTH_NAMES[end.getMonth()]}`;
+
+  if (start.getMonth() === end.getMonth()) {
+    return `${start.getDate()} al ${endLabel}`;
+  }
+  return `${start.getDate()} de ${MONTH_NAMES[start.getMonth()]} al ${endLabel}`;
+}
+
+/** ISO string -> "8:06 AM" (no leading zero, no seconds - for the fixing drill-down list). */
+export function formatTimeShort(iso: string): string {
+  const date = new Date(iso);
+  let hours = date.getHours();
+  const period = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  return `${hours}:${pad(date.getMinutes())} ${period}`;
+}

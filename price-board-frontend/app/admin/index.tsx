@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
+import { AppText } from "../../src/components/AppText";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Screen } from "../../src/components/Screen";
 import { Card } from "../../src/components/Card";
@@ -72,14 +73,14 @@ export default function UsersScreen() {
             onPress={() => router.push("/admin/create-user")}
             className="rounded-xl bg-primary px-4 py-2 hover:opacity-90 active:opacity-80 dark:bg-primary-dark"
           >
-            <Text className="text-sm font-semibold text-white">{strings.adminUsers.createButton}</Text>
+            <AppText className="text-sm font-semibold text-white">{strings.adminUsers.createButton}</AppText>
           </Pressable>
           <LogoutButton />
         </View>
       }
     >
       {actionError ? (
-        <Text className="px-1 pb-2 text-sm text-danger dark:text-danger-dark">{actionError}</Text>
+        <AppText className="px-1 pb-2 text-sm text-danger dark:text-danger-dark">{actionError}</AppText>
       ) : null}
 
       <StateView
@@ -98,16 +99,16 @@ export default function UsersScreen() {
             <Card>
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-2">
-                  <Text className="text-base font-semibold text-primary dark:text-white">
+                  <AppText className="text-base font-semibold text-primary dark:text-white">
                     {item.fullName}
-                  </Text>
-                  <Text className="text-sm text-muted dark:text-muted-dark">@{item.username}</Text>
-                  <Text className="text-sm text-muted dark:text-muted-dark">
+                  </AppText>
+                  <AppText className="text-sm text-muted dark:text-muted-dark">@{item.username}</AppText>
+                  <AppText className="text-sm text-muted dark:text-muted-dark">
                     {strings.adminUsers.meta(
                       roleLabel(item.role),
                       item.municipality ?? strings.common.noMunicipality
                     )}
-                  </Text>
+                  </AppText>
                 </View>
                 <Badge
                   label={
@@ -125,18 +126,18 @@ export default function UsersScreen() {
                   disabled={busyId === item.id}
                   className="flex-1 items-center rounded-xl border border-border py-2.5 hover:opacity-90 active:opacity-70 dark:border-border-dark"
                 >
-                  <Text className="text-sm font-semibold text-primary dark:text-white">
+                  <AppText className="text-sm font-semibold text-primary dark:text-white">
                     {item.status === "ACTIVE" ? strings.adminUsers.suspend : strings.adminUsers.activate}
-                  </Text>
+                  </AppText>
                 </Pressable>
                 <Pressable
                   onPress={() => setUserToDelete(item)}
                   disabled={busyId === item.id}
                   className="flex-1 items-center rounded-xl border border-danger py-2.5 hover:opacity-90 active:opacity-70 dark:border-danger-dark"
                 >
-                  <Text className="text-sm font-semibold text-danger dark:text-danger-dark">
+                  <AppText className="text-sm font-semibold text-danger dark:text-danger-dark">
                     {strings.adminUsers.delete}
-                  </Text>
+                  </AppText>
                 </Pressable>
               </View>
             </Card>

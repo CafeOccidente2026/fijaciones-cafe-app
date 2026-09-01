@@ -37,4 +37,24 @@ router.get(
   asyncHandler(PriceFixingsController.monthlyChartData)
 );
 
+// ADMIN only: weekly (Mon-Fri) bar chart, its drill-downs, closed-week
+// history and the PDF report.
+router.get("/weekly-chart", authorize(Role.ADMIN), asyncHandler(PriceFixingsController.weeklyChart));
+router.get("/weekly-history", authorize(Role.ADMIN), asyncHandler(PriceFixingsController.weeklyHistory));
+router.get(
+  "/weekly-report-pdf",
+  authorize(Role.ADMIN),
+  asyncHandler(PriceFixingsController.weeklyReportPdf)
+);
+router.get(
+  "/weekly-chart/:coffeeTypeId/by-user",
+  authorize(Role.ADMIN),
+  asyncHandler(PriceFixingsController.weeklyByUser)
+);
+router.get(
+  "/weekly-chart/:coffeeTypeId/by-user/:userId",
+  authorize(Role.ADMIN),
+  asyncHandler(PriceFixingsController.weeklyByUserFixings)
+);
+
 export default router;

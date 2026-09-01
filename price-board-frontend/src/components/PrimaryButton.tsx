@@ -1,5 +1,6 @@
 import React from "react";
-import { ActivityIndicator, Pressable, Text } from "react-native";
+import { ActivityIndicator, Pressable } from "react-native";
+import { AppText } from "./AppText";
 
 interface PrimaryButtonProps {
   label: string;
@@ -30,7 +31,7 @@ export function PrimaryButton({ label, onPress, loading, disabled }: PrimaryButt
       {loading ? (
         <ActivityIndicator color="#FFFFFF" />
       ) : (
-        <Text className="text-base font-semibold text-white">{label}</Text>
+        <AppText className="text-base font-semibold text-white">{label}</AppText>
       )}
     </Pressable>
   );

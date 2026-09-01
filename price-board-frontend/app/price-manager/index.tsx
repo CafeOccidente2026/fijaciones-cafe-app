@@ -1,5 +1,6 @@
 import React from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
+import { AppText } from "../../src/components/AppText";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Screen } from "../../src/components/Screen";
 import { Card } from "../../src/components/Card";
@@ -59,12 +60,12 @@ export default function TodaySummaryScreen() {
               <Card onPress={() => router.push(`/price-manager/today-detail/${item.id}`)}>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1 pr-3">
-                    <Text className="text-base font-semibold text-primary dark:text-white">
+                    <AppText className="text-base font-semibold text-primary dark:text-white">
                       {item.name}
-                    </Text>
-                    <Text className="text-xs text-muted dark:text-muted-dark">
+                    </AppText>
+                    <AppText className="text-xs text-muted dark:text-muted-dark">
                       {strings.priceManagerToday.fixingCount(item.count)}
-                    </Text>
+                    </AppText>
                   </View>
                   {newCount > 0 ? (
                     <Badge label={strings.priceManagerToday.newCount(newCount)} tone="danger" />

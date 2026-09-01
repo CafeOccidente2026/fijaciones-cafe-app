@@ -1,5 +1,11 @@
 import { httpClient } from "./httpClient";
-import { CoffeeType } from "../types/coffeeType.types";
+import { CoffeeType, PriceHistoryEntry } from "../types/coffeeType.types";
+
+export interface PriceHistoryFilters {
+  coffeeTypeId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
 
 /**
  * Single responsibility: talk to /api/coffee-types.
@@ -25,5 +31,14 @@ export class CoffeeTypesApi {
   static async updatePrice(id: string, price: number): Promise<CoffeeType> {
     const { data } = await httpClient.patch(`/coffee-types/${id}/price`, { price });
     return data.data as CoffeeType;
+  }
+
+  static async priceHistory(filters: PriceHistoryFilters = {}): Promise<PriceHistoryEntry[]> {
+    const params: Record<string, string> = {};
+    for (const [key, value] of Object.entries(filters)) {
+      if (value) params[key] = value;
+    }
+    const { data } = await httpClient.get("/coffee-types/price-history", { params });
+    return data.data as PriceHistoryEntry[];
   }
 }

@@ -8,6 +8,7 @@ import { AuthProvider } from "../src/auth/AuthContext";
 import { useInactivityLogout } from "../src/auth/useInactivityLogout";
 import { useNotificationListeners } from "../src/hooks/useNotificationListeners";
 import { ThemeProvider, useTheme } from "../src/theme/ThemeContext";
+import { FontScaleProvider, useFontScale } from "../src/theme/FontScaleContext";
 import { ScreenBackground } from "../src/components/ScreenBackground";
 import { LoadingScreen } from "../src/components/LoadingScreen";
 import { strings } from "../src/constants/strings";
@@ -62,8 +63,9 @@ function InactivityGate({ children }: { children: React.ReactNode }) {
 /** Holds rendering until the saved theme preference has been read. */
 function ThemedApp() {
   const { isReady, resolvedTheme } = useTheme();
+  const { isReady: fontScaleReady } = useFontScale();
 
-  if (!isReady) {
+  if (!isReady || !fontScaleReady) {
     return (
       <ScreenBackground>
         <LoadingScreen />
@@ -87,7 +89,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
-        <ThemedApp />
+        <FontScaleProvider>
+          <ThemedApp />
+        </FontScaleProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

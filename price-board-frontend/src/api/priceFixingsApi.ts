@@ -6,6 +6,10 @@ import {
   MonthlyChartItem,
   MyPriceFixing,
   TodaySummaryItem,
+  WeeklyByUserItem,
+  WeeklyChartData,
+  WeeklyHistoryWeek,
+  WeeklyUserFixing,
 } from "../types/priceFixing.types";
 
 /**
@@ -44,5 +48,45 @@ export class PriceFixingsApi {
   static async monthlyChartData(): Promise<MonthlyChartItem[]> {
     const { data } = await httpClient.get("/price-fixings/monthly-chart-data");
     return data.data as MonthlyChartItem[];
+  }
+
+  static async weeklyChart(weekStart?: string): Promise<WeeklyChartData> {
+    const { data } = await httpClient.get("/price-fixings/weekly-chart", {
+      params: weekStart ? { weekStart } : undefined,
+    });
+    return data.data as WeeklyChartData;
+  }
+
+  static async weeklyHistory(): Promise<WeeklyHistoryWeek[]> {
+    const { data } = await httpClient.get("/price-fixings/weekly-history");
+    return data.data as WeeklyHistoryWeek[];
+  }
+
+  static async weeklyByUser(coffeeTypeId: string, weekStart?: string): Promise<WeeklyByUserItem[]> {
+    const { data } = await httpClient.get(`/price-fixings/weekly-chart/${coffeeTypeId}/by-user`, {
+      params: weekStart ? { weekStart } : undefined,
+    });
+    return data.data as WeeklyByUserItem[];
+  }
+
+  static async weeklyByUserFixings(
+    coffeeTypeId: string,
+    userId: string,
+    weekStart?: string
+  ): Promise<WeeklyUserFixing[]> {
+    const { data } = await httpClient.get(
+      `/price-fixings/weekly-chart/${coffeeTypeId}/by-user/${userId}`,
+      { params: weekStart ? { weekStart } : undefined }
+    );
+    return data.data as WeeklyUserFixing[];
+  }
+
+  /** Raw PDF bytes for the weekly report - saving/sharing is the caller's job. */
+  static async weeklyReportPdf(weekStart?: string): Promise<ArrayBuffer> {
+    const { data } = await httpClient.get("/price-fixings/weekly-report-pdf", {
+      params: weekStart ? { weekStart } : undefined,
+      responseType: "arraybuffer",
+    });
+    return data as ArrayBuffer;
   }
 }
