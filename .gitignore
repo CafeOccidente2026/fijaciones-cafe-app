@@ -47,3 +47,5 @@ target/
 .DS_Store
 *.pem
 *.log
+
+google-services.json
