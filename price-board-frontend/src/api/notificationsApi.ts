@@ -1,5 +1,10 @@
 import { httpClient } from "./httpClient";
-import { AppNotification, SendNotificationPayload, SentNotification } from "../types/notification.types";
+import {
+  AppNotification,
+  NotificationAudience,
+  SendNotificationPayload,
+  SentNotification,
+} from "../types/notification.types";
 
 /**
  * Single responsibility: talk to /api/notifications.
@@ -17,9 +22,9 @@ export class NotificationsApi {
 
   static async send(
     payload: SendNotificationPayload
-  ): Promise<{ id: string; audience: string; recipientCount: number }> {
+  ): Promise<{ id: string; audience: NotificationAudience; recipientCount: number }> {
     const { data } = await httpClient.post("/notifications", payload);
-    return data.data as { id: string; audience: string; recipientCount: number };
+    return data.data as { id: string; audience: NotificationAudience; recipientCount: number };
   }
 
   static async markRead(notificationRecipientId: string): Promise<void> {

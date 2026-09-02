@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "291734816873",
+    "project_id": "fijaciones-cafeoccidente",
+    "storage_bucket": "fijaciones-cafeoccidente.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291734816873:android:97b4b11770bfb7219cbaf8",
+        "android_client_info": {
+          "package_name": "com.cafeoccidentesteam.fijacionescafe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAiEBhN1mDQgX4PVoNhMcVvaUb8XEF7Jk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

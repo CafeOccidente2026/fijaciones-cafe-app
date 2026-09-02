@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,6 +19,8 @@ import { AppUser } from "../types/user.types";
 import { NotificationAudience } from "../types/notification.types";
 import { roleLabel } from "../utils/format";
 import { strings } from "../constants/strings";
+
+const SUCCESS_BANNER_MS = 3000;
 
 /**
  * "Enviar notificación": a message plus a target audience. Shared by
@@ -52,6 +54,14 @@ export function SendNotificationScreen() {
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  // The success banner replaces the form; drop it on its own after a few
+  // seconds so the form reappears, ready for the next notification.
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => setSuccessMessage(null), SUCCESS_BANNER_MS);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
 
   // The audience choices are mutually exclusive: switching away from
   // "específicos" drops any hand-picked selection, and vice versa.
@@ -89,9 +99,13 @@ export function SendNotificationScreen() {
         audience,
         recipientIds: audience === "SPECIFIC" ? recipientIds : undefined,
       });
-      setSuccessMessage(strings.sendNotification.success(result.recipientCount));
+      const successText = strings.sendNotification.success(result.audience, result.recipientCount);
       setMessage("");
-      chooseAudience("ALL_PRODUCER");
+      setAudience("ALL_PRODUCER");
+      setSelectedIds(new Set());
+      // Set after the resets above, not via chooseAudience (which nulls
+      // successMessage) — otherwise the banner is cleared the instant it's set.
+      setSuccessMessage(successText);
     } catch (err) {
       setFormError(getApiErrorMessage(err));
     } finally {
@@ -115,94 +129,96 @@ export function SendNotificationScreen() {
         </Pressable>
       }
     >
-      <Card>
-        <Text className="mb-2 text-xs font-semibold tracking-wide text-muted dark:text-muted-dark">
-          {strings.sendNotification.messageLabel.toUpperCase()}
-        </Text>
-        <TextInput
-          placeholder={strings.sendNotification.messagePlaceholder}
-          placeholderTextColor={colors.placeholder}
-          multiline
-          value={message}
-          onChangeText={setMessage}
-          className="min-h-[96px] rounded-xl border border-border bg-background px-4 py-3 text-base text-primary dark:border-border-dark dark:bg-background-dark dark:text-white"
-          style={{ textAlignVertical: "top" }}
-        />
-      </Card>
-
-      <Card>
-        {isAdmin ? (
-          <AudienceOption
-            checked={audience === "ALL_PRICE_MANAGER"}
-            label={strings.sendNotification.toAllPriceManagers}
-            onPress={() => chooseAudience("ALL_PRICE_MANAGER")}
-          />
-        ) : null}
-        <AudienceOption
-          checked={audience === "ALL_PRODUCER"}
-          label={strings.sendNotification.toAll}
-          onPress={() => chooseAudience("ALL_PRODUCER")}
-        />
-        <AudienceOption
-          checked={audience === "SPECIFIC"}
-          label={strings.sendNotification.toSpecific}
-          onPress={() => chooseAudience("SPECIFIC")}
-          isLast
-        />
-      </Card>
-
-      {audience === "SPECIFIC" ? (
-        <StateView
-          isLoading={isLoading}
-          error={error}
-          isEmpty={!isLoading && !error && recipientOptions.length === 0}
-          emptyText={isAdmin ? strings.sendNotification.emptyAdmin : strings.sendNotification.empty}
-          onRetry={reload}
-        >
-          <Card>
-            {recipientOptions.map((candidate) => {
-              const checked = selectedIds.has(candidate.id);
-              return (
-                <Pressable
-                  key={candidate.id}
-                  onPress={() => toggle(candidate.id)}
-                  className="flex-row items-center gap-3 border-b border-border py-3 hover:opacity-90 active:opacity-70 dark:border-border-dark"
-                >
-                  <View
-                    className={`h-5 w-5 items-center justify-center rounded border ${
-                      checked
-                        ? "border-accent bg-accent dark:border-accent-dark dark:bg-accent-dark"
-                        : "border-muted"
-                    }`}
-                  >
-                    {checked ? <Text className="text-xs font-bold text-white">✓</Text> : null}
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-base text-primary dark:text-white">{candidate.fullName}</Text>
-                    <Text className="text-xs text-muted dark:text-muted-dark">
-                      {candidate.municipality ?? strings.common.noMunicipality}
-                    </Text>
-                  </View>
-                  {isAdmin ? <Badge label={roleLabel(candidate.role)} tone="muted" /> : null}
-                </Pressable>
-              );
-            })}
-          </Card>
-        </StateView>
-      ) : null}
-
-      {formError ? (
-        <Text className="text-sm text-danger dark:text-danger-dark">{formError}</Text>
-      ) : null}
       {successMessage ? (
-        <View className="rounded-xl bg-accent-soft p-3 dark:bg-accent-soft-dark">
-          <Text className="text-center text-sm font-semibold text-primary dark:text-white">
-            {successMessage}
-          </Text>
+        <View className="min-h-[420px] items-center justify-center rounded-2xl bg-success p-8 dark:bg-success-dark">
+          <Ionicons name="checkmark-circle" size={72} color="white" />
+          <Text className="mt-4 text-center text-xl font-bold text-white">{successMessage}</Text>
         </View>
-      ) : null}
+      ) : (
+        <>
+          <Card>
+            <Text className="mb-2 text-xs font-semibold tracking-wide text-muted dark:text-muted-dark">
+              {strings.sendNotification.messageLabel.toUpperCase()}
+            </Text>
+            <TextInput
+              placeholder={strings.sendNotification.messagePlaceholder}
+              placeholderTextColor={colors.placeholder}
+              multiline
+              value={message}
+              onChangeText={setMessage}
+              className="min-h-[96px] rounded-xl border border-border bg-background px-4 py-3 text-base text-primary dark:border-border-dark dark:bg-background-dark dark:text-white"
+              style={{ textAlignVertical: "top" }}
+            />
+          </Card>
 
-      <PrimaryButton label={strings.sendNotification.sendButton} onPress={submit} loading={submitting} />
+          <Card>
+            {isAdmin ? (
+              <AudienceOption
+                checked={audience === "ALL_PRICE_MANAGER"}
+                label={strings.sendNotification.toAllPriceManagers}
+                onPress={() => chooseAudience("ALL_PRICE_MANAGER")}
+              />
+            ) : null}
+            <AudienceOption
+              checked={audience === "ALL_PRODUCER"}
+              label={strings.sendNotification.toAll}
+              onPress={() => chooseAudience("ALL_PRODUCER")}
+            />
+            <AudienceOption
+              checked={audience === "SPECIFIC"}
+              label={strings.sendNotification.toSpecific}
+              onPress={() => chooseAudience("SPECIFIC")}
+              isLast
+            />
+          </Card>
+
+          {audience === "SPECIFIC" ? (
+            <StateView
+              isLoading={isLoading}
+              error={error}
+              isEmpty={!isLoading && !error && recipientOptions.length === 0}
+              emptyText={isAdmin ? strings.sendNotification.emptyAdmin : strings.sendNotification.empty}
+              onRetry={reload}
+            >
+              <Card>
+                {recipientOptions.map((candidate) => {
+                  const checked = selectedIds.has(candidate.id);
+                  return (
+                    <Pressable
+                      key={candidate.id}
+                      onPress={() => toggle(candidate.id)}
+                      className="flex-row items-center gap-3 border-b border-border py-3 hover:opacity-90 active:opacity-70 dark:border-border-dark"
+                    >
+                      <View
+                        className={`h-5 w-5 items-center justify-center rounded border ${
+                          checked
+                            ? "border-accent bg-accent dark:border-accent-dark dark:bg-accent-dark"
+                            : "border-muted"
+                        }`}
+                      >
+                        {checked ? <Text className="text-xs font-bold text-white">✓</Text> : null}
+                      </View>
+                      <View className="flex-1">
+                        <Text className="text-base text-primary dark:text-white">{candidate.fullName}</Text>
+                        <Text className="text-xs text-muted dark:text-muted-dark">
+                          {candidate.municipality ?? strings.common.noMunicipality}
+                        </Text>
+                      </View>
+                      {isAdmin ? <Badge label={roleLabel(candidate.role)} tone="muted" /> : null}
+                    </Pressable>
+                  );
+                })}
+              </Card>
+            </StateView>
+          ) : null}
+
+          {formError ? (
+            <Text className="text-sm text-danger dark:text-danger-dark">{formError}</Text>
+          ) : null}
+
+          <PrimaryButton label={strings.sendNotification.sendButton} onPress={submit} loading={submitting} />
+        </>
+      )}
     </Screen>
   );
 }

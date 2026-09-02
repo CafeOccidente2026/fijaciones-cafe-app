@@ -1,3 +1,5 @@
+import { NotificationAudience } from "../types/notification.types";
+
 /**
  * Single source of truth for every user-visible string in the app.
  * Code stays in English; only the CONTENT here is in Spanish. No UI text
@@ -203,7 +205,11 @@ export const strings = {
     toSpecific: "Elegir destinatarios específicos",
     missingMessage: "Escribe un mensaje",
     missingRecipients: "Selecciona al menos un destinatario",
-    success: (count: number) => `Notificación enviada a ${count} persona(s)`,
+    success: (audience: NotificationAudience, count: number) => {
+      if (audience === "ALL_PRODUCER") return "Notificación enviada a todos los Fieles de Compra";
+      if (audience === "ALL_PRICE_MANAGER") return "Notificación enviada a todos los Encargados";
+      return `Notificación enviada a ${count} ${count === 1 ? "persona" : "personas"}`;
+    },
     sendButton: "Enviar",
     empty: "No hay fieles de compra registrados.",
     emptyAdmin: "No hay usuarios disponibles para notificar.",

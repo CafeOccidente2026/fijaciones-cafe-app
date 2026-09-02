@@ -49,6 +49,9 @@ module.exports = {
 
         danger: "#A32638",
         "danger-dark": "#C7495A",
+
+        success: "#16A34A",
+        "success-dark": "#4ADE80",
       },
     },
   },

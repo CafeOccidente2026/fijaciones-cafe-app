@@ -18,6 +18,7 @@ export interface ThemeColors {
   muted: string;
   border: string;
   danger: string;
+  success: string;
   onPrimary: string;
   placeholder: string;
 }
@@ -34,6 +35,7 @@ export const lightColors: ThemeColors = {
   muted: "#7E6553",
   border: "#D9C6A8",
   danger: "#A32638",
+  success: "#16A34A",
   onPrimary: "#FBF6EC",
   placeholder: "#A9968A",
 };
@@ -50,6 +52,7 @@ export const darkColors: ThemeColors = {
   muted: "#BEAD9B",
   border: "#4A392A",
   danger: "#C7495A",
+  success: "#4ADE80",
   onPrimary: "#FBF6EC",
   placeholder: "#8A7360",
 };
