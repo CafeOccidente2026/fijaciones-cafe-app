@@ -47,7 +47,17 @@ export class PushNotificationService {
       const response = await fetch(EXPO_PUSH_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(tokens.map((to) => ({ to, title, body, data }))),
+        body: JSON.stringify(
+          tokens.map((to) => ({
+            to,
+            title,
+            body,
+            data,
+            sound: "default",
+            priority: "high",
+            channelId: "default",
+          }))
+        ),
       });
 
       if (!response.ok) {

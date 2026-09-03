@@ -41,6 +41,15 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
       return null;
     }
 
+    // Android 8+ won't show a heads-up banner/sound without a channel of
+    // IMPORTANCE_HIGH. Must match the "default" channelId the backend
+    // sends in the push payload (pushNotification.service.ts).
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "Default",
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: "default",
+    });
+
     // ponytail: getExpoPushTokenAsync needs an EAS projectId. Once this app
     // is linked to an EAS project (app.json extra.eas.projectId / eas.json),
     // this starts returning real tokens with no further change here.
