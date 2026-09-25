@@ -1,4 +1,4 @@
-import { httpClient } from "./httpClient";
+import { httpClient, LONG_REQUEST_TIMEOUT_MS } from "./httpClient";
 import { AppUser, CreateUserPayload } from "../types/user.types";
 import { UserRole } from "../types/auth.types";
 
@@ -57,6 +57,7 @@ export class UsersApi {
 
     const { data } = await httpClient.post("/users/me/profile-photo-upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
+      timeout: LONG_REQUEST_TIMEOUT_MS,
     });
     return data.data as AppUser;
   }

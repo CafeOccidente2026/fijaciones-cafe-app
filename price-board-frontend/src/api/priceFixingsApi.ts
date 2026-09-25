@@ -1,4 +1,4 @@
-import { httpClient } from "./httpClient";
+import { httpClient, LONG_REQUEST_TIMEOUT_MS } from "./httpClient";
 import {
   CreatePriceFixingPayload,
   DetailedPriceFixing,
@@ -86,6 +86,7 @@ export class PriceFixingsApi {
     const { data } = await httpClient.get("/price-fixings/weekly-report-pdf", {
       params: weekStart ? { weekStart } : undefined,
       responseType: "arraybuffer",
+      timeout: LONG_REQUEST_TIMEOUT_MS,
     });
     return data as ArrayBuffer;
   }

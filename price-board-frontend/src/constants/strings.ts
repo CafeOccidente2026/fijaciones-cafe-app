@@ -43,6 +43,9 @@ export const strings = {
     hidePassword: "Ocultar contraseña",
     missingFields: "Ingresa tu usuario y contraseña",
     invalidCredentials: "Usuario o contraseña incorrectos",
+    noInternet: "No tienes acceso a internet. Revisa tu conexión.",
+    serverDown: "No se pudo conectar con el servidor. Inténtalo más tarde.",
+    connectionUnclear: "No se pudo conectar. Revisa tu conexión.",
   },
 
   tabs: {

@@ -3,7 +3,12 @@ import { SecureTokenStorage } from "../auth/secureTokenStorage";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:4000/api";
 
-export const httpClient = axios.create({ baseURL: API_URL });
+// Without a timeout an unreachable server leaves requests hanging forever.
+// 15s leaves room for slow rural mobile data; big transfers override it.
+const REQUEST_TIMEOUT_MS = 15000;
+export const LONG_REQUEST_TIMEOUT_MS = 60000;
+
+export const httpClient = axios.create({ baseURL: API_URL, timeout: REQUEST_TIMEOUT_MS });
 
 /**
  * Called by AuthContext once, at startup, so this file doesn't need to
@@ -33,7 +38,13 @@ httpClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 
-    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
+    // A 401 on login means wrong credentials, not an expired session.
+    if (
+      error.response?.status !== 401 ||
+      !originalRequest ||
+      originalRequest._retry ||
+      originalRequest.url === "/auth/login"
+    ) {
       return Promise.reject(error);
     }
 

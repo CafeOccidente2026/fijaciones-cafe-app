@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import * as Network from "expo-network";
 import { Image, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../src/auth/AuthContext";
@@ -6,6 +8,45 @@ import { FormField } from "../src/components/FormField";
 import { PrimaryButton } from "../src/components/PrimaryButton";
 import { strings } from "../src/constants/strings";
 import { images } from "../src/constants/images";
+
+// Endpoint Android itself uses to detect real internet access.
+const CONNECTIVITY_CHECK_URL = "https://clients3.google.com/generate_204";
+const CONNECTIVITY_CHECK_TIMEOUT_MS = 4000;
+
+/** True if an external server answered at all (any HTTP status counts). */
+async function canReachInternet(): Promise<boolean> {
+  try {
+    await axios.get(CONNECTIVITY_CHECK_URL, {
+      timeout: CONNECTIVITY_CHECK_TIMEOUT_MS,
+      validateStatus: () => true,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// No response at all means the request never reached the backend. If the
+// device is offline it's the user's connection; if it's online, only blame
+// our server when an external site does answer - otherwise stay neutral.
+async function getLoginErrorMessage(error: unknown): Promise<string> {
+  if (axios.isAxiosError(error) && error.response?.status === 401) {
+    return strings.auth.invalidCredentials;
+  }
+
+  if (axios.isAxiosError(error) && !error.response) {
+    try {
+      const network = await Network.getNetworkStateAsync();
+      const isOffline = network.isConnected === false || network.isInternetReachable === false;
+      if (isOffline) return strings.auth.noInternet;
+    } catch {
+      // Unknown device state: let the external check decide.
+    }
+    return (await canReachInternet()) ? strings.auth.serverDown : strings.auth.connectionUnclear;
+  }
+
+  return strings.auth.invalidCredentials;
+}
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -28,8 +69,8 @@ export default function LoginScreen() {
     try {
       await login(username.trim(), password);
       router.replace("/home");
-    } catch {
-      setErrorMessage(strings.auth.invalidCredentials);
+    } catch (error) {
+      setErrorMessage(await getLoginErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
