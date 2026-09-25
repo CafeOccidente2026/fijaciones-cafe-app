@@ -47,20 +47,24 @@ async function emailBackup(): Promise<void> {
   const today = new Date().toLocaleDateString("es-CO");
   const transporter = nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: user,
     to: user,
     subject: `Respaldo Fijaciones - ${today}`,
     text: `Respaldo automatico de la base de datos de Fijaciones generado el ${today}.\n\nEl archivo adjunto contiene el volcado completo (pg_dump comprimido con gzip).`,
     attachments: [{ filename: path.basename(BACKUP_FILE), path: BACKUP_FILE }],
   });
+
+  // Gmail's SMTP reply ("250 2.0.0 OK ...") is the proof it took the message.
+  console.log(`Correo enviado correctamente a ${user}`);
+  console.log(`  Respuesta de Gmail: ${info.response}`);
+  console.log(`  Message-ID: ${info.messageId}`);
 }
 
 async function main() {
   await dumpDatabase();
   console.log(`Respaldo guardado en ${BACKUP_FILE}`);
   await emailBackup();
-  console.log("Respaldo enviado por correo.");
 }
 
 main().catch((error) => {
