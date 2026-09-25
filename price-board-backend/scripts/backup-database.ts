@@ -45,7 +45,14 @@ async function emailBackup(): Promise<void> {
   }
 
   const today = new Date().toLocaleDateString("es-CO");
-  const transporter = nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
+  // Port 587 + STARTTLS: Hetzner blocks outbound 25/465, the "gmail" preset's port.
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: { user, pass },
+  });
 
   const info = await transporter.sendMail({
     from: user,
