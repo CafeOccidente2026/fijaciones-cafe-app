@@ -6,6 +6,9 @@ export type FontScalePreference = "small" | "normal" | "large" | "extraLarge";
 
 const STORAGE_KEY = "priceboard_font_scale_preference";
 
+// Used only until the user picks a size in Perfil (nothing saved yet).
+const DEFAULT_PREFERENCE: FontScalePreference = "large";
+
 // NativeWind's default rem base (see react-native-css-interop's unit-observables.ts).
 // Every Tailwind text-* class in this project resolves against this value, so
 // scaling it here reaches all className-based text app-wide with no per-screen work.
@@ -39,14 +42,14 @@ function isFontScalePreference(value: string | null): value is FontScalePreferen
  * class reacts - the same pattern ThemeContext uses for `colorScheme`.
  */
 export function FontScaleProvider({ children }: { children: React.ReactNode }) {
-  const [fontScalePreference, setFontScalePreferenceState] = useState<FontScalePreference>("normal");
+  const [fontScalePreference, setFontScalePreferenceState] = useState<FontScalePreference>(DEFAULT_PREFERENCE);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     (async () => {
       try {
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
-        const preference: FontScalePreference = isFontScalePreference(saved) ? saved : "normal";
+        const preference: FontScalePreference = isFontScalePreference(saved) ? saved : DEFAULT_PREFERENCE;
         setFontScalePreferenceState(preference);
         rem.set(BASE_REM * MULTIPLIERS[preference]);
       } finally {
