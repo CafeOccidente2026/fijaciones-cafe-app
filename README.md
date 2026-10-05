@@ -59,3 +59,9 @@ está en el README de cada subproyecto, enlazado más abajo.
 - [`price-board-frontend/README.md`](./price-board-frontend/README.md) —
   arquitectura de la app, requisitos de red para Expo Go, seguridad del lado
   del cliente.
+- [`DESPLIEGUE.md`](./DESPLIEGUE.md) — cómo montar el backend en un servidor
+  nuevo (VPS, Nginx, SSL, pm2, respaldo).
+
+
+ 
+
